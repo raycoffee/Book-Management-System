@@ -8,6 +8,7 @@ import MyBooks from './pages/MyBooks';
 import Navbar from './components/Navbar';
 import AuthProvider from './context/AuthContext';
 import AddBook from './pages/AddBook';
+import BookDetails from './pages/BookDetails/BookDetails';
 function App() {
   return (
     <AuthProvider>
@@ -20,6 +21,8 @@ function App() {
           <Route path="/select-genres" element={<SelectGenres />} />
           <Route path="/my-books" element={<MyBooks />} />
           <Route path="/add-book" element={<AddBook />} />
+          <Route path="/book/:bookId" element={<BookDetails />} />
+
         </Routes>
       </Router>
     </AuthProvider>

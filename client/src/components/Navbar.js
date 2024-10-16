@@ -17,7 +17,7 @@ function Navbar() {
     <AppBar
       position="static"
       sx={{
-        background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
+        background: 'linear-gradient(45deg, #673ab7, #ab47bc)', // Matching with staple image colors
         paddingY: 1,
         boxShadow: 4,
       }}
@@ -32,7 +32,7 @@ function Navbar() {
             textDecoration: 'none',
             color: '#fff',
             fontWeight: 'bold',
-            '&:hover': { color: '#f3e5f5' },
+            '&:hover': { color: '#ede7f6' }, // Soft lavender hover effect
           }}
         >
           Book Management
@@ -47,7 +47,11 @@ function Navbar() {
                   color: '#fff',
                   marginRight: 2,
                   fontSize: '1rem',
-                  '&:hover': { backgroundColor: '#8e24aa' },
+                  fontWeight: 'medium',
+                  textTransform: 'none', // Friendly feel
+                  '&:hover': {
+                    backgroundColor: '#9c27b0', // Slightly lighter purple on hover
+                  },
                 }}
                 onClick={() => navigate('/my-books')}
               >
@@ -57,7 +61,11 @@ function Navbar() {
                 sx={{
                   color: '#fff',
                   fontSize: '1rem',
-                  '&:hover': { backgroundColor: '#8e24aa' },
+                  fontWeight: 'medium',
+                  textTransform: 'none',
+                  '&:hover': {
+                    backgroundColor: '#8e24aa', // Darker hover for Logout
+                  },
                 }}
                 onClick={handleLogout}
               >
@@ -69,7 +77,11 @@ function Navbar() {
               sx={{
                 color: '#fff',
                 fontSize: '1rem',
-                '&:hover': { backgroundColor: '#8e24aa' },
+                fontWeight: 'medium',
+                textTransform: 'none',
+                '&:hover': {
+                  backgroundColor: '#8e24aa', // Consistent hover effect
+                },
               }}
               onClick={() => navigate('/signin')}
             >

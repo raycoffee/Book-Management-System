@@ -1,44 +1,50 @@
 import Book from '../models/Books.js';
 
-// Create a new book
-export const createBook = async (req, res) => {
+export const addBook = async (req, res) => {
   try {
-    const book = new Book(req.body);
+    const { title, author, published_date, ISBN, genre, thumbnail } = req.body;
+
+    const book = new Book({
+      title,
+      author,
+      published_date,
+      ISBN,
+      genre,
+      thumbnail,
+      userId: req.user.id,
+    });
+
     await book.save();
     res.status(201).json(book);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to add book.' });
   }
 };
 
-// Get all books
-export const getBooks = async (req, res) => {
+export const getBooksByUser = async (req, res) => {
   try {
-    const books = await Book.find();
+    const books = await Book.find({ userId: req.params.userId });
     res.json(books);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to retrieve books.' });
   }
 };
 
-// Update a book by ID
-export const updateBook = async (req, res) => {
-  try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.json(book);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-// Delete a book by ID
 export const deleteBook = async (req, res) => {
   try {
-    await Book.findByIdAndDelete(req.params.id);
-    res.status(204).end();
+    const { bookId } = req.params;
+
+    const book = await Book.findById(bookId);
+    if (!book) return res.status(404).json({ error: 'Book not found.' });
+
+    // Check if the user is the owner of the book
+    if (book.userId.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Unauthorized to delete this book.' });
+    }
+
+    await book.remove();
+    res.status(200).json({ message: 'Book deleted successfully.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to delete book.' });
   }
 };
