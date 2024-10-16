@@ -1,8 +1,8 @@
-// src/pages/HomePage.js
 import React, { useContext } from 'react';
 import { Container, Typography, Button, Box, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import theme from '../theme'; // Import the centralized theme
 
 function HomePage() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
@@ -14,24 +14,25 @@ function HomePage() {
   };
 
   return (
-    <Container 
-      maxWidth="md" 
-      sx={{ 
-        mt: 10, 
-        textAlign: 'center', 
-        display: 'flex', 
-        flexDirection: 'column', 
+    <Container
+      maxWidth="md"
+      sx={{
+        mt: theme.spacing.marginY,
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        gap: 4
+        gap: 4,
+        padding: '2rem',
       }}
     >
-      <Typography 
-        variant="h3" 
-        fontWeight="bold" 
-        sx={{ 
-          color: '#6a1b9a', 
+      <Typography
+        variant="h3"
+        fontWeight="bold"
+        sx={{
+          color: theme.palette.primary.main,
           mb: 3,
-          background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
+          background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}
@@ -44,13 +45,13 @@ function HomePage() {
           <Button
             variant="contained"
             sx={{
-              background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
-              color: '#fff',
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+              color: theme.palette.text.light,
               px: 4,
               py: 1.5,
               borderRadius: 8,
               fontSize: '1rem',
-              '&:hover': { background: '#8e24aa' },
+              '&:hover': { background: theme.palette.primary.hoverDark },
             }}
             onClick={() => navigate('/my-books')}
           >
@@ -58,17 +59,16 @@ function HomePage() {
           </Button>
           <Button
             variant="outlined"
-            color="secondary"
             sx={{
-              borderColor: '#d81b60',
-              color: '#d81b60',
+              borderColor: theme.palette.primary.hoverLighter,
+              color: theme.palette.primary.hoverDark,
               px: 4,
               py: 1.5,
               borderRadius: 8,
               fontSize: '1rem',
               '&:hover': {
-                background: '#ffebee',
-                borderColor: '#d81b60',
+                background: theme.palette.primary.hoverLight,
+                borderColor: theme.palette.primary.main,
               },
             }}
             onClick={handleLogout}
@@ -80,13 +80,13 @@ function HomePage() {
         <Button
           variant="contained"
           sx={{
-            background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
-            color: '#fff',
+            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
+            color: theme.palette.text.light,
             px: 6,
             py: 1.5,
             borderRadius: 8,
             fontSize: '1.2rem',
-            '&:hover': { background: '#8e24aa' },
+            '&:hover': { background: theme.palette.primary.hoverDark },
           }}
           onClick={() => navigate('/signin')}
         >

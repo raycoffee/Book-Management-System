@@ -1,8 +1,8 @@
-// src/components/Navbar.js
 import React, { useContext } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import theme from '../theme'; // Import the theme
 
 function Navbar() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
@@ -17,40 +17,38 @@ function Navbar() {
     <AppBar
       position="static"
       sx={{
-        background: 'linear-gradient(45deg, #673ab7, #ab47bc)', // Matching with staple image colors
+        background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
         paddingY: 1,
         boxShadow: 4,
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Brand Name */}
         <Typography
           variant="h5"
           component={Link}
           to="/"
           sx={{
             textDecoration: 'none',
-            color: '#fff',
+            color: theme.palette.text.light,
             fontWeight: 'bold',
-            '&:hover': { color: '#ede7f6' }, // Soft lavender hover effect
+            '&:hover': { color: theme.palette.primary.hoverLight },
           }}
         >
           Book Management
         </Typography>
 
-        {/* Navigation Links */}
         <Box>
           {isLoggedIn ? (
             <>
               <Button
                 sx={{
-                  color: '#fff',
+                  color: theme.palette.text.light,
                   marginRight: 2,
-                  fontSize: '1rem',
-                  fontWeight: 'medium',
-                  textTransform: 'none', // Friendly feel
+                  fontSize: theme.typography.fontSize,
+                  fontWeight: theme.typography.fontWeight,
+                  textTransform: 'none',
                   '&:hover': {
-                    backgroundColor: '#9c27b0', // Slightly lighter purple on hover
+                    backgroundColor: theme.palette.primary.hoverLighter,
                   },
                 }}
                 onClick={() => navigate('/my-books')}
@@ -59,12 +57,12 @@ function Navbar() {
               </Button>
               <Button
                 sx={{
-                  color: '#fff',
-                  fontSize: '1rem',
-                  fontWeight: 'medium',
+                  color: theme.palette.text.light,
+                  fontSize: theme.typography.fontSize,
+                  fontWeight: theme.typography.fontWeight,
                   textTransform: 'none',
                   '&:hover': {
-                    backgroundColor: '#8e24aa', // Darker hover for Logout
+                    backgroundColor: theme.palette.primary.hoverDark,
                   },
                 }}
                 onClick={handleLogout}
@@ -75,12 +73,12 @@ function Navbar() {
           ) : (
             <Button
               sx={{
-                color: '#fff',
-                fontSize: '1rem',
-                fontWeight: 'medium',
+                color: theme.palette.text.light,
+                fontSize: theme.typography.fontSize,
+                fontWeight: theme.typography.fontWeight,
                 textTransform: 'none',
                 '&:hover': {
-                  backgroundColor: '#8e24aa', // Consistent hover effect
+                  backgroundColor: theme.palette.primary.hoverDark,
                 },
               }}
               onClick={() => navigate('/signin')}

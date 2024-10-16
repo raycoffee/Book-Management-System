@@ -29,7 +29,6 @@ export const register = async (req, res) => {
     await user.save();
 
     const token = generateToken(user);
-    console.log(user);
 
     // Return the token and userId for the frontend
     res.status(201).json({ token, userId: user._id });
@@ -49,7 +48,6 @@ export const login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials." });
 
     const token = generateToken(user);
-
     // Return token, userId, and name for frontend convenience
     res.json({ token, userId: user._id, name: user.name });
   } catch (error) {

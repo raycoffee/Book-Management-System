@@ -25,12 +25,18 @@ function MyBooks() {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const userId = localStorage.getItem('userId');
+  
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-
-  useEffect(() => {
+useEffect(() => {
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+  if (!userId || !token) {
+    navigate('/signin'); 
+  } else {
     fetchBooks();
-  }, []);
+  }
+}, []);
 
   const fetchBooks = async () => {
     try {
@@ -38,11 +44,13 @@ function MyBooks() {
         `http://localhost:3001/api/v1/books/${userId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setBooks(response.data);
+      // Now response.data contains userBook records, each with populated bookId
+      setBooks(response.data.map(userBook => userBook.bookId));
     } catch (error) {
       console.error('Failed to fetch books:', error);
     }
   };
+  
 
   const handleDeleteReview = async (bookId, reviewId) => {
     try {

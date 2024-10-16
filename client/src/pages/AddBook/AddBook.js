@@ -32,7 +32,7 @@ function AddBook() {
   const handleAddBook = async (book) => {
     const token = localStorage.getItem('token');
     const { title, authors, publishedDate, industryIdentifiers, imageLinks, categories } = book.volumeInfo;
-
+  
     const newBook = {
       title,
       author: authors?.join(', ') || 'Unknown',
@@ -41,7 +41,7 @@ function AddBook() {
       genre: categories?.[0] || 'Unknown',
       thumbnail: imageLinks?.thumbnail || 'https://via.placeholder.com/150',
     };
-
+  
     try {
       await axios.post('http://localhost:3001/api/v1/books', newBook, {
         headers: {
@@ -54,6 +54,7 @@ function AddBook() {
       console.error('Error adding book:', error);
     }
   };
+  
 
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>

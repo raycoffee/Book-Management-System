@@ -2,7 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Container, TextField, Button, Typography, Box, Link } from '@mui/material';
 import axios from 'axios';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext'; // Import the context
+import { AuthContext } from '../../context/AuthContext';
+import theme from '../../theme'; // Import the theme
 
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
@@ -28,8 +29,8 @@ function SignUp() {
   };
 
   return (
-    <Container maxWidth="xs" style={{ marginTop: '2rem' }}>
-      <Typography variant="h5" gutterBottom>
+    <Container maxWidth="xs" sx={{ marginTop: theme.spacing.marginY }}>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
         Sign Up
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -40,6 +41,17 @@ function SignUp() {
           value={user.name}
           onChange={handleChange}
           margin="normal"
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.primary.hoverLighter,
+              },
+            },
+          }}
         />
         <TextField
           fullWidth
@@ -48,6 +60,17 @@ function SignUp() {
           value={user.email}
           onChange={handleChange}
           margin="normal"
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.primary.hoverLighter,
+              },
+            },
+          }}
         />
         <TextField
           fullWidth
@@ -57,15 +80,44 @@ function SignUp() {
           value={user.password}
           onChange={handleChange}
           margin="normal"
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.primary.hoverLighter,
+              },
+            },
+          }}
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth style={{ marginTop: '1rem' }}>
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          sx={{
+            marginTop: theme.spacing.marginTop,
+            backgroundColor: theme.palette.primary.main,
+            '&:hover': {
+              backgroundColor: theme.palette.primary.hoverLighter,
+            },
+          }}
+        >
           Sign Up
         </Button>
       </form>
       <Box textAlign="center" mt={2}>
         <Typography variant="body2">
           Already have an account?{' '}
-          <Link component={RouterLink} to="/signin">
+          <Link
+            component={RouterLink}
+            to="/signin"
+            sx={{
+              color: theme.palette.primary.main,
+              '&:hover': { color: theme.palette.primary.hoverDark },
+            }}
+          >
             Sign In
           </Link>
         </Typography>

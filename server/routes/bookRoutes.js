@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  addBook,
+  addBookForUser,
   getBooksByUser,
   deleteBook,
 
@@ -14,7 +14,7 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // Routes for books
-router.post('/', authenticateToken, addBook); // Add a new book
+router.post('/', authenticateToken, addBookForUser); // Add a new book
 router.get('/:userId', authenticateToken, getBooksByUser); // Get all books by a user
 
 // Routes for reviews
