@@ -15,7 +15,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-
 function BookDetails() {
   const { bookId } = useParams();
   const location = useLocation();
@@ -136,14 +135,23 @@ function BookDetails() {
             alt={book.title}
             sx={{
               width: '100%',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              borderRadius: '12px',
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
             }}
           />
         </Grid2>
 
         <Grid2 item xs={12} sm={8}>
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             {book.title}
           </Typography>
           <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
@@ -154,17 +162,29 @@ function BookDetails() {
           </Typography>
 
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{ color: '#6a1b9a', fontWeight: 'bold' }}>
               Your Review
             </Typography>
             {userReview ? (
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Typography sx={{ flexGrow: 1 }}>{userReview.comment}</Typography>
                 <Rating value={userReview.rating} readOnly sx={{ ml: 2 }} />
-                <IconButton color="primary" onClick={() => setRating(userReview.rating)}>
+                <IconButton
+                  color="primary"
+                  sx={{
+                    '&:hover': { backgroundColor: '#8e24aa', color: '#fff' },
+                  }}
+                  onClick={() => setRating(userReview.rating)}
+                >
                   <EditIcon />
                 </IconButton>
-                <IconButton color="error" onClick={handleDeleteReview}>
+                <IconButton
+                  color="error"
+                  sx={{
+                    '&:hover': { backgroundColor: '#d32f2f', color: '#fff' },
+                  }}
+                  onClick={handleDeleteReview}
+                >
                   <DeleteIcon />
                 </IconButton>
               </Box>
@@ -183,9 +203,26 @@ function BookDetails() {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   variant="outlined"
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                    },
+                  }}
                 />
-                <Button onClick={handleReviewSubmit} variant="contained">
+                <Button
+                  variant="contained"
+                  sx={{
+                    background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
+                    color: '#fff',
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 8,
+                    fontSize: '1rem',
+                    '&:hover': { background: '#8e24aa' },
+                  }}
+                  onClick={handleReviewSubmit}
+                >
                   Submit Review
                 </Button>
               </Box>
@@ -193,15 +230,24 @@ function BookDetails() {
           </Box>
 
           <Box>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{ color: '#6a1b9a', fontWeight: 'bold' }}>
               Community Reviews
             </Typography>
             {reviews.length === 0 ? (
               <Typography>No reviews yet.</Typography>
             ) : (
               reviews.map((review) => (
-                <Box key={review._id} sx={{ mb: 2 }}>
-                  <Typography variant="body1" fontWeight="bold">
+                <Box
+                  key={review._id}
+                  sx={{
+                    mb: 2,
+                    p: 2,
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: '#f3e5f5',
+                  }}
+                >
+                  <Typography variant="body1" fontWeight="bold" sx={{ color: '#6a1b9a' }}>
                     {review.username}
                   </Typography>
                   <Rating value={review.rating} readOnly sx={{ mb: 1 }} />

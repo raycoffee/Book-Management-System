@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Container, TextField, Button, Typography, Box, Link } from '@mui/material';
 import axios from 'axios';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Import the context
+import { AuthContext } from '../../context/AuthContext'; // Import the context
 
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });

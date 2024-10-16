@@ -15,13 +15,13 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // Use Link from react-router-dom for navigation
-import ReviewModal from './ReviewModal';
+import { useNavigate, Link } from 'react-router-dom';
+import ReviewModal from '../ReviewModal';
 
 function MyBooks() {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
-  const [selectedReview, setSelectedReview] = useState(null); // Track review for edit
+  const [selectedReview, setSelectedReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const userId = localStorage.getItem('userId');
@@ -50,7 +50,7 @@ function MyBooks() {
         `http://localhost:3001/api/v1/books/${bookId}/reviews/${reviewId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchBooks(); // Refresh the book list after deletion
+      fetchBooks();
     } catch (error) {
       console.error('Failed to delete review:', error);
     }
@@ -80,7 +80,7 @@ function MyBooks() {
       setRating(0);
       setComment('');
       setSelectedBook(null);
-      setSelectedReview(null); // Reset review state
+      setSelectedReview(null);
       fetchBooks();
     } catch (error) {
       console.error('Failed to submit review:', error);
@@ -93,7 +93,7 @@ function MyBooks() {
         `http://localhost:3001/api/v1/books/${bookId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchBooks(); // Refresh the list after deletion
+      fetchBooks();
     } catch (error) {
       console.error('Failed to delete book:', error);
     }
@@ -102,11 +102,21 @@ function MyBooks() {
   return (
     <Container maxWidth="lg" sx={{ mt: 5 }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4">My Books</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#6a1b9a' }}>
+          My Books
+        </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => navigate('/add-book')}
+          sx={{
+            background: 'linear-gradient(45deg, #6a1b9a, #d81b60)',
+            color: '#fff',
+            px: 3,
+            py: 1.2,
+            borderRadius: '8px',
+            '&:hover': { background: '#8e24aa' },
+          }}
         >
           Add Book
         </Button>
@@ -114,29 +124,53 @@ function MyBooks() {
 
       <Grid container spacing={4}>
         {books.map((book) => {
-          const userReview = book.reviews.find((review) => review.userId === userId); // Get the user's review, if any
+          const userReview = book.reviews.find((review) => review.userId === userId);
 
           return (
             <Grid item xs={12} sm={6} md={4} key={book._id}>
-              <Card>
+              <Card
+                sx={{
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': { transform: 'translateY(-8px)' },
+                }}
+              >
                 <CardMedia
                   component="img"
                   height="300"
                   image={book.thumbnail || 'https://via.placeholder.com/150'}
                   alt={book.title}
+                  sx={{ borderBottom: '1px solid #ddd' }}
                 />
-                <CardContent>
-                <Typography variant="h6" component={Link} to={`/book/${book._id}`}    state={{ book }} sx={{ textDecoration: 'underline', cursor: 'pointer' }}>
-                {book.title}
-              </Typography>
-              
-                  <Typography>{book.author}</Typography>
+                <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                  <Typography
+                    variant="h6"
+                    component={Link}
+                    to={`/book/${book._id}`}
+                    state={{ book }}
+                    sx={{
+                      textDecoration: 'none',
+                      color: '#6a1b9a',
+                      fontWeight: 'bold',
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    {book.title}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#757575', mt: 1 }}>
+                    {book.author}
+                  </Typography>
 
                   {/* Book Delete Button */}
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
                     <IconButton
                       onClick={() => handleDeleteBook(book._id)}
                       color="error"
+                      sx={{
+                        '&:hover': { backgroundColor: '#ffebee' },
+                      }}
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
@@ -144,32 +178,43 @@ function MyBooks() {
 
                   {/* User's Review Section */}
                   {userReview ? (
-                    <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd' }}>
-                      <Typography variant="body2">
+                    <Box sx={{ mt: 2, p: 2, border: '1px solid #ddd', borderRadius: '8px' }}>
+                      <Typography variant="body2" sx={{ color: '#6a1b9a' }}>
                         {userReview.username}: {userReview.comment} ({userReview.rating} Stars)
                       </Typography>
                       <Box sx={{ mt: 1 }}>
                         <IconButton
                           onClick={() => handleEditReview(book, userReview)}
                           color="primary"
+                          sx={{
+                            '&:hover': { backgroundColor: '#e8eaf6' },
+                          }}
                         >
                           <EditIcon />
                         </IconButton>
                         <IconButton
                           onClick={() => handleDeleteReview(book._id, userReview._id)}
                           color="error"
+                          sx={{
+                            '&:hover': { backgroundColor: '#ffebee' },
+                          }}
                         >
                           <DeleteOutlineIcon />
                         </IconButton>
                       </Box>
                     </Box>
                   ) : (
-                    /* Show Write Review Button if the user has no review */
                     <Box sx={{ mt: 2 }}>
                       <Button
                         variant="outlined"
                         onClick={() => setSelectedBook(book)}
                         fullWidth
+                        sx={{
+                          color: '#6a1b9a',
+                          borderColor: '#6a1b9a',
+                          borderRadius: '8px',
+                          '&:hover': { backgroundColor: '#f3e5f5' },
+                        }}
                       >
                         Write a Review
                       </Button>
