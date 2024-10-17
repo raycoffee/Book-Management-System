@@ -9,12 +9,20 @@ export const getReviewsByBook = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ error: 'Book not found.' });
 
-    // Return the reviews for the book
-    res.status(200).json({ reviews: book.reviews });
+    const reviews = book.reviews;
+    
+    // Calculate average rating
+    const averageRating = reviews.length > 0 
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length 
+      : 0;
+
+    // Return the reviews and average rating
+    res.status(200).json({ reviews, averageRating, totalReviews: reviews.length });
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve reviews.' });
   }
 };
+
 
 export const addReview = async (req, res) => {
   try {

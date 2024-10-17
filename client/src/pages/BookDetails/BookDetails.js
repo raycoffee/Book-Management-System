@@ -57,6 +57,9 @@ function BookDetails() {
     }
   };
 
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+  
   const fetchReviews = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -64,21 +67,24 @@ function BookDetails() {
         console.error('No token found, user is not authenticated.');
         return;
       }
-
+  
       const response = await axios.get(`http://localhost:3001/api/v1/books/${book._id}/reviews`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       const allReviews = response.data.reviews;
       const userReview = allReviews.find((review) => review.userId === userId);
       const communityReviews = allReviews.filter((review) => review.userId !== userId);
-
+  
       setUserReview(userReview);
       setReviews(communityReviews);
+      setAverageRating(response.data.averageRating);  // Set average rating
+      setTotalReviews(response.data.totalReviews);    // Set total reviews count
     } catch (error) {
       console.error('Failed to fetch reviews:', error);
     }
   };
+  
 
   const handleReviewSubmit = async () => {
     try {
@@ -157,10 +163,17 @@ function BookDetails() {
           <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
             {book.author}
           </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Rating value={averageRating} precision={0.1} readOnly />
+          <Typography variant="h6" sx={{ ml: 1 }}>
+            {averageRating.toFixed(2)} ({totalReviews} reviews)
+          </Typography>
+        </Box>
           <Typography variant="body1" sx={{ mb: 3 }}>
             {bookDescription}
           </Typography>
-
+  
+        
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" gutterBottom sx={{ color: '#6a1b9a', fontWeight: 'bold' }}>
               Your Review
