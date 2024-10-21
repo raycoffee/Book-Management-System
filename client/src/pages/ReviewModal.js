@@ -58,7 +58,6 @@ const ReviewModal = ({
             </Typography>
           </Box>
 
-          {/* Comment Input */}
           <TextField
             fullWidth
             multiline
@@ -69,12 +68,12 @@ const ReviewModal = ({
             onChange={(e) => setComment(e.target.value)}
             sx={{
               '& .MuiOutlinedInput-root': {
-                borderRadius: 2, // Slight rounding for modern look
+                borderRadius: 2, 
               },
             }}
           />
 
-          {/* Submit Button */}
+
           <Button
             variant="contained"
             onClick={onSubmit}

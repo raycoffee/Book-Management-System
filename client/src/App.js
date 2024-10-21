@@ -6,7 +6,7 @@ import SignUp from './pages/Auth/SignUp';
 import SelectGenres from './pages/SelectGenres';
 import MyBooks from './pages/MyBooks/MyBooks';
 import Navbar from './components/Navbar';
-import AuthProvider from './context/AuthContext';
+import AuthProvider from './context/AuthContext.js';
 import AddBook from './pages/AddBook/AddBook';
 import BookDetails from './pages/BookDetails/BookDetails';
 function App() {

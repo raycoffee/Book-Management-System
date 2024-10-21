@@ -1,111 +1,159 @@
-import Book from '../models/Books.js';
+import Book from "../models/Books.js";
+import UserBooks from "../models/UserBooks.js";
+import Review from "../models/Reviews.js";
+import UserBookMatrix from "../models/UserBookMatrix.js";
 
+export const getReviewsByBookAuth = async (req, res) => {
+  console.log('Am i hit?')
+  try {
+    const { bookId } = req.params;
+
+    const book = await Book.findById(bookId);
+    if (!book) return res.status(404).json({ error: "Book not found." });
+
+    const allReviews = await Review.find({ bookId });
+
+    const userReview = allReviews.find(
+      (review) => review.userId.toString() === req.user._id.toString()
+    );
+
+    const communityReviews = allReviews.filter(
+      (review) => review.userId.toString() !== req.user._id.toString()
+    );
+
+    const averageRating =
+      allReviews.length > 0
+        ? allReviews.reduce((acc, review) => acc + review.rating, 0) /
+          allReviews.length
+        : 0;
+
+    // Send the response with all necessary data
+    res.status(200).json({
+      reviews: communityReviews, 
+      averageRating,
+      totalReviews: allReviews.length, 
+      userReview, 
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve reviews." });
+  }
+};
 
 export const getReviewsByBook = async (req, res) => {
   try {
     const { bookId } = req.params;
 
-    // Find the book by its ID
     const book = await Book.findById(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found.' });
+    if (!book) return res.status(404).json({ error: "Book not found." });
 
-    const reviews = book.reviews;
-    
-    // Calculate average rating
-    const averageRating = reviews.length > 0 
-      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length 
-      : 0;
+    const reviews = await Review.find({ bookId });
 
-    // Return the reviews and average rating
-    res.status(200).json({ reviews, averageRating, totalReviews: reviews.length });
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) /
+          reviews.length
+        : 0;
+
+    res.status(200).json({
+      reviews,
+      averageRating,
+      totalReviews: reviews.length,
+      userReview: null,
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve reviews.' });
+    res.status(500).json({ error: "Failed to retrieve reviews." });
   }
 };
 
-
 export const addReview = async (req, res) => {
+
   try {
     const { bookId } = req.params;
     const { comment, rating } = req.body;
-    // Find the book by ID
-    const book = await Book.findById(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found.' });
 
-    // Ensure the comment and rating are provided
+    const userBook = await UserBooks.findOne({ userId: req.user._id, bookId });
+
+    if (!userBook)
+      return res.status(404).json({ error: "User does not have this book." });
+
     if (!comment || !rating) {
-      return res.status(400).json({ error: 'Comment and rating are required.' });
+      return res
+        .status(400)
+        .json({ error: "Comment and rating are required." });
     }
 
-    // Add the review using data from req.user and req.body
-    const review = {
+    const review = new Review({
+      bookId,
       userId: req.user.id,
-      username: req.user.name, // Use name from the token
+      username: req.user.name,
       rating,
       comment,
-    };
+    });
 
-    book.reviews.push(review); // Add the review to the book
-    await book.save(); // Save the updated book
+    await review.save();
 
-    res.status(201).json({ message: 'Review added successfully.' });
+
+    userBook.reviewId = review._id;
+    await userBook.save();
+
+    res.status(201).json({ message: "Review added successfully.", review });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to add review', error });
+    res.status(500).json({ message: "Failed to add review", error });
   }
 };
 
-
-// Update Review
 export const updateReview = async (req, res) => {
   try {
-    const { bookId, reviewId } = req.params;
+    const { reviewId } = req.params;
     const { rating, comment } = req.body;
 
-    const book = await Book.findById(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found.' });
+    const review = await Review.findOne({
+      _id: reviewId,
+      userId: req.user._id,
+    });
 
-    const review = book.reviews.id(reviewId);
-    if (!review) return res.status(404).json({ error: 'Review not found.' });
-
-    // Check if the user is the owner of the review
-    if (review.userId.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Unauthorized to edit this review.' });
+    if (!review) {
+      return res
+        .status(404)
+        .json({ error: "Review not found or not owned by the user." });
     }
 
-    // Update the review fields
     review.rating = rating;
     review.comment = comment;
 
-    await book.save();
-    res.status(200).json({ message: 'Review updated successfully.' });
+    await review.save();
+
+    res.status(200).json({ message: "Review updated successfully.", review });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update review.' });
+    res.status(500).json({ error: "Failed to update review." });
   }
 };
 
-// Delete Review
 export const deleteReview = async (req, res) => {
+  console.log(1098)
   try {
-    const { bookId, reviewId } = req.params;
+    const { reviewId } = req.params;
 
-    const book = await Book.findById(bookId);
-    if (!book) return res.status(404).json({ error: 'Book not found.' });
+    const review = await Review.findOne({
+      _id: reviewId,
+      userId: req.user._id,
+    });
 
-    const review = book.reviews.id(reviewId);
-    if (!review) return res.status(404).json({ error: 'Review not found.' });
-
-    // Check if the user is the owner of the review
-    if (!review.userId.equals(req.user.id)) {
-      return res.status(403).json({ error: 'Unauthorized to delete this review.' });
+    if (!review) {
+      return res
+        .status(404)
+        .json({ error: "Review not found or not owned by the user." });
     }
 
-    // Remove the review from the reviews array
-    book.reviews.pull(reviewId);
+    await Review.findByIdAndDelete(reviewId);
 
-    await book.save();
-    res.status(200).json({ message: 'Review deleted successfully.' });
+    await UserBooks.updateOne(
+      { userId: req.user._id, reviewId: reviewId },
+      { $unset: { reviewId: "" } }
+    );
+
+    res.status(200).json({ message: "Review deleted successfully." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to delete review.' });
+    res.status(500).json({ error: "Failed to delete review." });
   }
 };

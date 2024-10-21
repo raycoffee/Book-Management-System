@@ -1,35 +1,49 @@
-import React, { useState, useContext } from 'react';
-import { Container, TextField, Button, Typography, Box, Link } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
-import theme from '../../theme'; // Import theme
+import React, { useState, useContext } from "react";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Link,
+} from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext.js";
 
-function SignIn() {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const { setIsLoggedIn } = useContext(AuthContext);
+const SignIn = () => {
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/users/login', credentials);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('userId', response.data.userId);
+      const response = await axios.post(
+        "http://localhost:3001/api/v1/users/sign-in",
+        credentials,
+        { withCredentials: true }
+      );
 
       setIsLoggedIn(true);
-      navigate('/');
+      setUser(response.data.user);
+
+      navigate("/");
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
   return (
-    <Container maxWidth="xs" sx={{ marginTop: theme.spacing.marginY }}>
+    <Container maxWidth="xs" sx={{ marginTop: 4 }}>
       <Typography variant="h5" gutterBottom>
         Sign In
       </Typography>
@@ -55,27 +69,21 @@ function SignIn() {
           type="submit"
           variant="contained"
           fullWidth
-          sx={{
-            marginTop: theme.spacing.marginTop,
-            backgroundColor: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.hoverLighter,
-            },
-          }}
+          sx={{ marginTop: 2 }}
         >
           Sign In
         </Button>
       </form>
       <Box textAlign="center" mt={2}>
         <Typography variant="body2">
-          Don't have an account?{' '}
-          <Link component={RouterLink} to="/signup" sx={{ color: theme.palette.primary.main }}>
+          Don't have an account?{" "}
+          <Link component={RouterLink} to="/signup">
             Sign Up
           </Link>
         </Typography>
       </Box>
     </Container>
   );
-}
+};
 
 export default SignIn;

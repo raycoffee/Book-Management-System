@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Container,
   TextField,
@@ -12,11 +12,15 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
-function AddBook() {
+const AddBook = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
+  
+  const { isLoggedIn } = useContext(AuthContext);
+  
 
   const handleSearch = async () => {
     try {
@@ -29,10 +33,11 @@ function AddBook() {
     }
   };
 
+
   const handleAddBook = async (book) => {
-    const token = localStorage.getItem('token');
+
     const { title, authors, publishedDate, industryIdentifiers, imageLinks, categories } = book.volumeInfo;
-  
+
     const newBook = {
       title,
       author: authors?.join(', ') || 'Unknown',
@@ -41,24 +46,34 @@ function AddBook() {
       genre: categories?.[0] || 'Unknown',
       thumbnail: imageLinks?.thumbnail || 'https://via.placeholder.com/150',
     };
-  
+
     try {
-      await axios.post('http://localhost:3001/api/v1/books', newBook, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        'http://localhost:3001/api/v1/books/user',
+        newBook,
+        { withCredentials: true }
+      );
       alert('Book added successfully!');
       navigate('/my-books');
     } catch (error) {
       console.error('Error adding book:', error);
     }
   };
-  
+
+ 
+  if (!isLoggedIn) {
+    return (
+      <Container maxWidth="md" sx={{ mt: 6 }}>
+        <Typography variant="h4" color="error" align="center">
+          You need to be logged in to add books.
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ mt: 6 }}>
-      {/* Title Section */}
+
       <Typography
         variant="h4"
         fontWeight="bold"
@@ -75,7 +90,7 @@ function AddBook() {
         Search and Add a Book
       </Typography>
 
-      {/* Search Field */}
+
       <Box display="flex" justifyContent="center" mb={3}>
         <TextField
           variant="outlined"
@@ -108,7 +123,7 @@ function AddBook() {
         </Button>
       </Box>
 
-      {/* Results Grid */}
+
       <Grid container spacing={4}>
         {searchResults.map((book) => (
           <Grid item xs={12} sm={6} md={4} key={book.id}>

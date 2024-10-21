@@ -2,11 +2,12 @@ import React, { useContext } from 'react';
 import { Container, Typography, Button, Box, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import theme from '../theme'; // Import the centralized theme
-
+import theme from '../theme';
 function HomePage() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
+
+
 
   const handleLogout = () => {
     logOut();
