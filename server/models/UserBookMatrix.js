@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userBookMatrix = new moongoose.Schema({
+const userBookMatrix = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
