@@ -1,10 +1,10 @@
 import Book from "../models/Books.js";
 import UserBooks from "../models/UserBooks.js";
 import Review from "../models/Reviews.js";
-import UserBookMatrix from "../models/UserBookMatrix.js";
+import { addReviewToMatrix } from "../controllers/matrixOperationsController.js";
 
 export const getReviewsByBookAuth = async (req, res) => {
-  console.log('Am i hit?')
+
   try {
     const { bookId } = req.params;
 
@@ -29,10 +29,10 @@ export const getReviewsByBookAuth = async (req, res) => {
 
     // Send the response with all necessary data
     res.status(200).json({
-      reviews: communityReviews, 
+      reviews: communityReviews,
       averageRating,
-      totalReviews: allReviews.length, 
-      userReview, 
+      totalReviews: allReviews.length,
+      userReview,
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve reviews." });
@@ -66,7 +66,6 @@ export const getReviewsByBook = async (req, res) => {
 };
 
 export const addReview = async (req, res) => {
-
   try {
     const { bookId } = req.params;
     const { comment, rating } = req.body;
@@ -92,6 +91,7 @@ export const addReview = async (req, res) => {
 
     await review.save();
 
+    await addReviewToMatrix(req.user._id, bookId, review._id);
 
     userBook.reviewId = review._id;
     await userBook.save();
@@ -130,7 +130,6 @@ export const updateReview = async (req, res) => {
 };
 
 export const deleteReview = async (req, res) => {
-  console.log(1098)
   try {
     const { reviewId } = req.params;
 
