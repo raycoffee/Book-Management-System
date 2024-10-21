@@ -1,33 +1,18 @@
 import React, { useState, useContext, useEffect } from "react";
-import {
-  Container,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-  Box,
-  IconButton,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import ReviewModal from "../ReviewModal";
+import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 import { AuthContext } from "../../context/AuthContext.js";
-
+import "./MyBooks.css";
+import { FaEdit, FaTrashAlt } from "react-icons/fa"; 
 const MyBooks = () => {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedReview, setSelectedReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const { isLoggedIn, logOut, user } = useContext(AuthContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -74,7 +59,6 @@ const MyBooks = () => {
         : `http://localhost:3001/api/v1/reviews/${selectedBook._id}`;
       const method = selectedReview ? "put" : "post";
 
-
       await axios[method](
         url,
         { rating, comment },
@@ -83,13 +67,12 @@ const MyBooks = () => {
         }
       );
 
-      // Reset state after submitting the review
       setRating(0);
       setComment("");
       setSelectedBook(null);
       setSelectedReview(null);
-      setBooks([])
-      fetchBooks(); // Refresh the books and reviews list after submission
+      setBooks([]);
+      fetchBooks();
     } catch (error) {
       console.error("Failed to submit review:", error);
     }
@@ -100,7 +83,6 @@ const MyBooks = () => {
       await axios.delete(`http://localhost:3001/api/v1/books/user/${bookId}`, {
         withCredentials: true,
       });
-
       fetchBooks();
     } catch (error) {
       console.error("Failed to delete book:", error);
@@ -108,151 +90,70 @@ const MyBooks = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 5 }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={4}
-      >
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#6a1b9a" }}>
-          My Books
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate("/add-book")}
-          sx={{
-            background: "linear-gradient(45deg, #6a1b9a, #d81b60)",
-            color: "#fff",
-            px: 3,
-            py: 1.2,
-            borderRadius: "8px",
-            "&:hover": { background: "#8e24aa" },
-          }}
-        >
-          Add Book
-        </Button>
-      </Box>
-      <Grid container spacing={4}>
+    <div className="my-books-container">
+      <div className="my-books-header">
+        <h1 className="my-books-title">My Books</h1>
+        <button className="add-book-button" onClick={() => navigate("/add-book")}>
+          <span className="add-icon">+</span> Add Book
+        </button>
+      </div>
+      <div className="books-grid">
         {books?.map((book) => {
           const userReview = book.reviewId;
           const userBook = book.bookId;
-
+  
           return (
-            <Grid item xs={12} sm={6} md={4} key={userBook?._id}>
-              <Card
-                sx={{
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                  borderRadius: "12px",
-                  overflow: "hidden",
-                  transition: "transform 0.3s ease",
-                  "&:hover": { transform: "translateY(-8px)" },
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="300"
-                  image={
-                    userBook?.thumbnail || "https://via.placeholder.com/150"
-                  }
-                  alt={userBook?.title}
-                  sx={{ borderBottom: "1px solid #ddd" }}
-                />
-                <CardContent sx={{ textAlign: "center", p: 2 }}>
-                  <Typography
-                    variant="h6"
-                    component={Link}
-                    to={`/book/${userBook?._id}`}
-                    sx={{
-                      textDecoration: "none",
-                      color: "#6a1b9a",
-                      fontWeight: "bold",
-                      "&:hover": { textDecoration: "underline" },
-                    }}
-                  >
-                    {userBook?.title}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#757575", mt: 1 }}>
-                    {userBook?.author}
-                  </Typography>
-
-                  <Box
-                    sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}
-                  >
-                    <IconButton
-                      onClick={() => handleDeleteBook(userBook?._id)}
-                      color="error"
-                      sx={{
-                        "&:hover": { backgroundColor: "#ffebee" },
-                      }}
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </Box>
-
-
-                  {userReview ? (
-                    <Box
-                      sx={{
-                        mt: 2,
-                        p: 2,
-                        border: "1px solid #ddd",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ color: "#6a1b9a" }}>
-                        {userReview?.username}: {userReview?.comment} (
-                        {userReview?.rating} Stars)
-            
-                      </Typography>
-                      <Box sx={{ mt: 1 }}>
-                        <IconButton
-                          onClick={() => handleEditReview(userBook, userReview)}
-                          color="primary"
-                          sx={{
-                            "&:hover": { backgroundColor: "#e8eaf6" },
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={() =>
-                            handleDeleteReview(userReview?._id)
-                          }
-                          color="error"
-                          sx={{
-                            "&:hover": { backgroundColor: "#ffebee" },
-                          }}
-                        >
-                          <DeleteOutlineIcon />
-                        </IconButton>
-                      </Box>
-                    </Box>
-                  ) : (
-                    <Box sx={{ mt: 2 }}>
-                      <Button
-                        variant="outlined"
-                        onClick={() => setSelectedBook(userBook)}
-                        fullWidth
-                        sx={{
-                          color: "#6a1b9a",
-                          borderColor: "#6a1b9a",
-                          borderRadius: "8px",
-                          "&:hover": { backgroundColor: "#f3e5f5" },
-                        }}
+            <div className="book-card" key={userBook?._id}>
+              <img
+                className="book-image"
+                src={userBook?.thumbnail || "https://via.placeholder.com/150"}
+                alt={userBook?.title}
+              />
+              <div className="book-content">
+                <Link to={`/book/${userBook?._id}`} className="book-title">
+                  {userBook?.title}
+                </Link>
+                <p className="book-author">{userBook?.author}</p>
+                <button
+                  className="delete-book-button"
+                  onClick={() => handleDeleteBook(userBook?._id)}
+                >
+                  <FaTrashAlt /> {/* Add delete icon */}
+                </button>
+                {userReview ? (
+                  <div className="review-box">
+                    <p className="review-text">
+                      {userReview?.username}: {userReview?.comment} (
+                      {userReview?.rating} Stars)
+                    </p>
+                    <div className="review-actions">
+                      <button
+                        className="edit-review-button"
+                        onClick={() => handleEditReview(userBook, userReview)}
                       >
-                        Write a Review
-                      </Button>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
+                        <FaEdit /> {/* Add edit icon */}
+                      </button>
+                      <button
+                        className="delete-review-button"
+                        onClick={() => handleDeleteReview(userReview?._id)}
+                      >
+                        <FaTrashAlt /> {/* Add delete icon */}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="write-review-button"
+                    onClick={() => setSelectedBook(userBook)}
+                  >
+                    Write a Review
+                  </button>
+                )}
+              </div>
+            </div>
           );
         })}
-      </Grid>
-
+      </div>
       <ReviewModal
         open={Boolean(selectedBook)}
         onClose={() => {
@@ -268,7 +169,7 @@ const MyBooks = () => {
         onSubmit={handleReviewSubmit}
         isEdit={Boolean(selectedReview)}
       />
-    </Container>
+    </div>
   );
 };
 

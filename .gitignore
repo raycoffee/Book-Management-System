@@ -1,3 +1,4 @@
 node_modules/
-backend/.env
+server/.env
 *.log
+client/.env

@@ -1,13 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { Container, TextField, Button, Typography, Box, Link } from '@mui/material';
-import axios from 'axios';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import theme from '../../theme'; // Import the theme
+import './SignUp.css'; // Import the CSS file
 
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
-  const { setIsLoggedIn } = useContext(AuthContext); // Access the function from context
+  const { setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -29,100 +28,46 @@ function SignUp() {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ marginTop: theme.spacing.marginY }}>
-      <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold' }}>
-        Sign Up
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Name"
+    <div className="signup-container">
+      <h1 className="signup-title">Sign Up</h1>
+      <form className="signup-form" onSubmit={handleSubmit}>
+        <input
+          className="signup-input"
+          type="text"
           name="name"
+          placeholder="Name"
           value={user.name}
           onChange={handleChange}
-          margin="normal"
-          variant="outlined"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: theme.palette.primary.main,
-              },
-              '&:hover fieldset': {
-                borderColor: theme.palette.primary.hoverLighter,
-              },
-            },
-          }}
         />
-        <TextField
-          fullWidth
-          label="Email"
+        <input
+          className="signup-input"
+          type="email"
           name="email"
+          placeholder="Email"
           value={user.email}
           onChange={handleChange}
-          margin="normal"
-          variant="outlined"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: theme.palette.primary.main,
-              },
-              '&:hover fieldset': {
-                borderColor: theme.palette.primary.hoverLighter,
-              },
-            },
-          }}
         />
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
+        <input
+          className="signup-input"
           type="password"
+          name="password"
+          placeholder="Password"
           value={user.password}
           onChange={handleChange}
-          margin="normal"
-          variant="outlined"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: theme.palette.primary.main,
-              },
-              '&:hover fieldset': {
-                borderColor: theme.palette.primary.hoverLighter,
-              },
-            },
-          }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            marginTop: theme.spacing.marginTop,
-            backgroundColor: theme.palette.primary.main,
-            '&:hover': {
-              backgroundColor: theme.palette.primary.hoverLighter,
-            },
-          }}
-        >
+        <button className="signup-button" type="submit">
           Sign Up
-        </Button>
+        </button>
       </form>
-      <Box textAlign="center" mt={2}>
-        <Typography variant="body2">
+      <div className="signup-footer">
+        <p>
           Already have an account?{' '}
-          <Link
-            component={RouterLink}
-            to="/signin"
-            sx={{
-              color: theme.palette.primary.main,
-              '&:hover': { color: theme.palette.primary.hoverDark },
-            }}
-          >
+          <RouterLink to="/signin" className="signup-link">
             Sign In
-          </Link>
-        </Typography>
-      </Box>
-    </Container>
+          </RouterLink>
+        </p>
+      </div>
+    </div>
   );
 }
 

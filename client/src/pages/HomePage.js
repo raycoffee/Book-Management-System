@@ -1,100 +1,44 @@
-import React, { useContext } from 'react';
-import { Container, Typography, Button, Box, Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import theme from '../theme';
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import "./HomePage.css"; // Import the CSS file
+
 function HomePage() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
 
-
-
   const handleLogout = () => {
     logOut();
-    navigate('/signin');
+    navigate("/signin");
   };
 
   return (
-    <Container
-      maxWidth="md"
-      sx={{
-        mt: theme.spacing.marginY,
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 4,
-        padding: '2rem',
-      }}
-    >
-      <Typography
-        variant="h3"
-        fontWeight="bold"
-        sx={{
-          color: theme.palette.primary.main,
-          mb: 3,
-          background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}
-      >
+    <div className="homepage-container">
+      <h1 className="homepage-title">
         Welcome to Your Book Management System
-      </Typography>
+      </h1>
 
       {isLoggedIn ? (
-        <Stack direction="row" spacing={3}>
-          <Button
-            variant="contained"
-            sx={{
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-              color: theme.palette.text.light,
-              px: 4,
-              py: 1.5,
-              borderRadius: 8,
-              fontSize: '1rem',
-              '&:hover': { background: theme.palette.primary.hoverDark },
-            }}
-            onClick={() => navigate('/my-books')}
+        <div className="button-group">
+          <button
+            className="primary-button"
+            onClick={() => navigate("/my-books")}
           >
             Go to My Books
-          </Button>
-          <Button
-            variant="outlined"
-            sx={{
-              borderColor: theme.palette.primary.hoverLighter,
-              color: theme.palette.primary.hoverDark,
-              px: 4,
-              py: 1.5,
-              borderRadius: 8,
-              fontSize: '1rem',
-              '&:hover': {
-                background: theme.palette.primary.hoverLight,
-                borderColor: theme.palette.primary.main,
-              },
-            }}
-            onClick={handleLogout}
-          >
+          </button>
+          <button className="outlined-button" onClick={handleLogout}>
             Log Out
-          </Button>
-        </Stack>
+          </button>
+        </div>
       ) : (
-        <Button
-          variant="contained"
-          sx={{
-            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
-            color: theme.palette.text.light,
-            px: 6,
-            py: 1.5,
-            borderRadius: 8,
-            fontSize: '1.2rem',
-            '&:hover': { background: theme.palette.primary.hoverDark },
-          }}
-          onClick={() => navigate('/signin')}
+        <button
+          className="primary-button"
+          onClick={() => navigate("/signin")}
         >
           Sign In to Continue
-        </Button>
+        </button>
       )}
-    </Container>
+    </div>
   );
 }
 

@@ -1,15 +1,8 @@
 import React, { useState, useContext } from "react";
-import {
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Link,
-} from "@mui/material";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.js";
+import "./SignIn.css"; // Import the CSS file
 
 const SignIn = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -43,46 +36,38 @@ const SignIn = () => {
   };
 
   return (
-    <Container maxWidth="xs" sx={{ marginTop: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Sign In
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          label="Email"
+    <div className="signin-container">
+      <h1 className="signin-title">Sign In</h1>
+      <form className="signin-form" onSubmit={handleSubmit}>
+        <input
+          className="signin-input"
+          type="email"
           name="email"
+          placeholder="Email"
           value={credentials.email}
           onChange={handleChange}
-          margin="normal"
         />
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
+        <input
+          className="signin-input"
           type="password"
+          name="password"
+          placeholder="Password"
           value={credentials.password}
           onChange={handleChange}
-          margin="normal"
         />
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{ marginTop: 2 }}
-        >
+        <button className="signin-button" type="submit">
           Sign In
-        </Button>
+        </button>
       </form>
-      <Box textAlign="center" mt={2}>
-        <Typography variant="body2">
+      <div className="signin-footer">
+        <p>
           Don't have an account?{" "}
-          <Link component={RouterLink} to="/signup">
+          <RouterLink to="/signup" className="signin-link">
             Sign Up
-          </Link>
-        </Typography>
-      </Box>
-    </Container>
+          </RouterLink>
+        </p>
+      </div>
+    </div>
   );
 };
 

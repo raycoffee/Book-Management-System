@@ -1,19 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-  Rating,
-  IconButton,
-  CircularProgress,
-  TextField,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext.js";
+import { AuthContext } from "../../context/AuthContext.js"; // Make sure this is imported correctly
 import axios from "axios";
+import "./BookDetails.css";
+import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 
 const BookDetails = () => {
   const { bookId } = useParams();
@@ -22,15 +12,39 @@ const BookDetails = () => {
   const [userReview, setUserReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [bookDescription, setBookDescription] = useState(
-    "No description available"
-  );
+  const [bookDescription, setBookDescription] = useState("No description available");
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
-  const { isLoggedIn } = useContext(AuthContext);
+  
+  const { isLoggedIn, user } = useContext(AuthContext); // Destructure user from AuthContext
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log(userReview, "😻");
+  const fetchReviews = async () => {
+    try {
+      const reviewEndpoint = isLoggedIn
+        ? `http://localhost:3001/api/v1/reviews/auth/${bookId}`
+        : `http://localhost:3001/api/v1/reviews/${bookId}`;
+
+      const reviewsResponse = await axios.get(reviewEndpoint, {
+        withCredentials: true,
+      });
+
+      const { reviews, averageRating, totalReviews, userReview } = reviewsResponse.data;
+
+      // Filter out the user's review from the community reviews
+      const filteredReviews = reviews.filter(
+        (review) => review.userId !== user?._id // Use user._id from AuthContext to filter
+      );
+
+      setReviews(filteredReviews);
+      setAverageRating(averageRating);
+      setTotalReviews(totalReviews);
+      setUserReview(userReview); // Separate user review
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchBookData = async () => {
@@ -38,40 +52,18 @@ const BookDetails = () => {
       try {
         const response = await axios.get(
           `http://localhost:3001/api/v1/books/${bookId}`,
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
-        const fetchedBook = response.data;
-        setBook(fetchedBook);
-        console.log(fetchedBook, "happy?");
+        setBook(response.data);
 
         const googleBooksResponse = await axios.get(
-          `https://www.googleapis.com/books/v1/volumes?key=${"AIzaSyBL-nSxptDK8cKwQjj3KRcOMkGxyLotV7s"}&q=${encodeURIComponent(
-            fetchedBook.title
-          )}`
+          `https://www.googleapis.com/books/v1/volumes?key=${process.env.REACT_APP_GOOGLE_API_KEY}&q=${encodeURIComponent(response.data.title)}`
         );
 
         const googleBooksData = googleBooksResponse.data.items[0]?.volumeInfo;
-        setBookDescription(
-          googleBooksData?.description || "No description available"
-        );
+        setBookDescription(googleBooksData?.description || "No description available");
 
-        let reviewEndpoint = `http://localhost:3001/api/v1/reviews/${bookId}`;
-        if (isLoggedIn) {
-          reviewEndpoint = `http://localhost:3001/api/v1/reviews/auth/${bookId}`;
-        }
-
-        console.log(reviewEndpoint, "👹");
-
-        const reviewsResponse = await axios.get(reviewEndpoint, {
-          withCredentials: true,
-        });
-
-        setReviews(reviewsResponse.data.reviews);
-        setAverageRating(reviewsResponse.data.averageRating);
-        setTotalReviews(reviewsResponse.data.totalReviews);
-        setUserReview(reviewsResponse.data.userReview);
+        await fetchReviews();
       } catch (error) {
         console.error("Error fetching book or reviews:", error);
       } finally {
@@ -80,7 +72,7 @@ const BookDetails = () => {
     };
 
     fetchBookData();
-  }, [bookId, isLoggedIn]);
+  }, [bookId, isLoggedIn, user]); // Add user as dependency
 
   const handleReviewSubmit = async () => {
     try {
@@ -89,17 +81,23 @@ const BookDetails = () => {
         ? `http://localhost:3001/api/v1/reviews/${userReview._id}`
         : `http://localhost:3001/api/v1/reviews/${book._id}`;
 
-      await axios[method](
+      const response = await axios[method](
         url,
         { rating, comment },
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
+
+      const updatedReview = response.data;
+
+      // Update the userReview state immediately
+      setUserReview(updatedReview);
+
+      // Refetch all reviews to ensure consistency
+      await fetchReviews();
 
       setRating(0);
       setComment("");
-      // await fetchReviews();
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Failed to submit review:", error);
     }
@@ -109,181 +107,118 @@ const BookDetails = () => {
     try {
       await axios.delete(
         `http://localhost:3001/api/v1/reviews/${userReview._id}`,
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
+
       setUserReview(null);
+      await fetchReviews();
+
       setRating(0);
       setComment("");
-      // await fetchReviews();
     } catch (error) {
       console.error("Failed to delete review:", error);
     }
   };
 
+  // Display a loader until user and user.id are available
+  if (user === null || user?._id === undefined) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading user data...</p>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <CircularProgress />
-      </Box>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+      </div>
     );
   }
 
   if (!book) {
     return (
-      <Typography variant="h6" align="center">
-        No book found.
-      </Typography>
+      <div className="container">
+        <h2>No book found.</h2>
+      </div>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box
-        display="flex"
-        flexDirection={{ xs: "column", sm: "row" }}
-        spacing={4}
-      >
-        <Box
-          component="img"
+    <div className="container">
+      <div className="book-details">
+        <img
           src={book.thumbnail || "https://via.placeholder.com/150"}
           alt={book.title}
-          sx={{
-            width: "100%",
-            maxWidth: "300px",
-            borderRadius: "12px",
-            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
-          }}
+          className="book-image"
         />
 
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              background: "linear-gradient(45deg, #6a1b9a, #d81b60)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            {book.title}
-          </Typography>
-          <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
-            {book.author}
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            <Rating value={averageRating} precision={0.1} readOnly />
-            <Typography variant="h6" sx={{ ml: 1 }}>
+        <div className="book-info">
+          <h2 className="book-title">{book.title}</h2>
+          <h4 className="book-author">{book.author}</h4>
+          <div className="rating-section">
+            <span className="rating-value">
               {averageRating.toFixed(2)} ({totalReviews} reviews)
-            </Typography>
-          </Box>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            {bookDescription}
-          </Typography>
+            </span>
+          </div>
+          <p className="book-description">{bookDescription}</p>
 
-          <Box sx={{ mb: 4 }}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ color: "#6a1b9a", fontWeight: "bold" }}
-            >
-              Your Review
-            </Typography>
+          <div className="user-review-section">
+            <h3>Your Review</h3>
             {userReview ? (
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Typography sx={{ flexGrow: 1 }}>
-                  {userReview.comment}
-                </Typography>
-                <Rating value={userReview.rating} readOnly sx={{ ml: 2 }} />
-                <IconButton
-                  color="primary"
+              <div className="user-review">
+                <p>{userReview.comment}</p>
+                <span className="user-rating">Rating: {userReview.rating}</span>
+                <button
+                  className="edit-button"
                   onClick={() => {
                     setRating(userReview.rating);
                     setComment(userReview.comment);
+                    setIsModalOpen(true);
                   }}
                 >
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error" onClick={handleDeleteReview}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
+                  Edit
+                </button>
+                <button className="delete-button" onClick={handleDeleteReview}>
+                  Delete
+                </button>
+              </div>
             ) : (
-              <Box sx={{ mb: 2 }}>
-                <Rating
-                  value={rating}
-                  onChange={(event, newValue) => setRating(newValue)}
-                  sx={{ mb: 1 }}
-                />
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  placeholder="Write your review"
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  variant="outlined"
-                  sx={{ mb: 2 }}
-                />
-                <Button
-                  variant="contained"
-                  sx={{
-                    background: "linear-gradient(45deg, #6a1b9a, #d81b60)",
-                    color: "#fff",
-                  }}
-                  onClick={handleReviewSubmit}
-                >
-                  Submit Review
-                </Button>
-              </Box>
+              <button className="add-review-button" onClick={() => setIsModalOpen(true)}>
+                Add Review
+              </button>
             )}
-          </Box>
+          </div>
 
-          <Box>
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ color: "#6a1b9a", fontWeight: "bold" }}
-            >
-              Community Reviews
-            </Typography>
+          <div className="community-reviews-section">
+            <h3>Community Reviews</h3>
             {reviews.length === 0 ? (
-              <Typography>No reviews yet.</Typography>
+              <p>No reviews yet.</p>
             ) : (
               reviews.map((review) => (
-                <Box
-                  key={review._id}
-                  sx={{
-                    mb: 2,
-                    p: 2,
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    backgroundColor: "#f3e5f5",
-                  }}
-                >
-                  <Typography
-                    variant="body1"
-                    fontWeight="bold"
-                    sx={{ color: "#6a1b9a" }}
-                  >
-                    {review.username}
-                  </Typography>
-                  <Rating value={review.rating} readOnly sx={{ mb: 1 }} />
-                  <Typography>{review.comment}</Typography>
-                </Box>
+                <div key={review._id} className="review-card">
+                  <strong>{review.username}</strong>
+                  <p>Rating: {review.rating}</p>
+                  <p>{review.comment}</p>
+                </div>
               ))
             )}
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+          </div>
+        </div>
+      </div>
+
+      <ReviewModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        rating={rating}
+        setRating={setRating}
+        comment={comment}
+        setComment={setComment}
+        onSubmit={handleReviewSubmit}
+      />
+    </div>
   );
 };
 
