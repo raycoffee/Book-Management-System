@@ -45,6 +45,7 @@ export const getUserRatings = async (userId) => {
 
   if (!userMatrix) return null;
 
+
   return userMatrix.ratings.map((ratings) => {
     return {
       bookId: ratings.bookId,
@@ -84,7 +85,6 @@ export const findSimilarUsers = async (currUserId) => {
 
   for (let otherUsers of allUsers) {
     const similarity = await calculateSimilarity(currUserId, otherUsers.userId);
-
     if (similarity > 0) {
       similarities.push({ userId: otherUsers.userId, similarity });
     }
@@ -98,7 +98,7 @@ export const recommendBooks = async (req, res) => {
   const similarUsers = await findSimilarUsers(req.user._id);
 
   if (similarUsers.length == 0) {
-    res.status(200).json([])
+    res.status(200).json([]);
   }
 
   const currUserRatings = await getUserRatings(req.user._id);
@@ -106,8 +106,6 @@ export const recommendBooks = async (req, res) => {
   const currUserBookIds = currUserRatings.map((rating) => {
     return rating.bookId.toString();
   });
-
-
 
   const predectiveRatings = {};
 
@@ -117,18 +115,17 @@ export const recommendBooks = async (req, res) => {
     similarUserRatings.forEach((review) => {
       const bookId = review.bookId.toString();
       if (!currUserBookIds.includes(review.bookId.toString())) {
-        const weightedRating = review.rating * similarUser.similarity;
         const weight = similarUser.similarity;
+        const weightedRating = review.rating * weight;
 
         if (!predectiveRatings[bookId]) {
           predectiveRatings[bookId] = [0, 0];
         }
         predectiveRatings[bookId][0] += weightedRating;
-        predectiveRatings[bookId][1] += weight;
+        predectiveRatings[bookId][1] += Number(weight);
       }
     });
   }
-
 
   for (let ratings of Object.keys(predectiveRatings)) {
     const numerator = predectiveRatings[ratings][0];

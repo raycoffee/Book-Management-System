@@ -3,7 +3,6 @@ import UserBook from "../models/UserBooks.js";
 import Review from "../models/Reviews.js";
 
 export const getBook = async (req, res) => {
-
   try {
     const { bookId } = req.params;
 
@@ -12,7 +11,6 @@ export const getBook = async (req, res) => {
     if (!book) {
       return res.status(404).json({ error: "Book not found." });
     }
-
 
     res.status(200).json(book);
   } catch (error) {
@@ -59,7 +57,6 @@ export const addBookForUser = async (req, res) => {
 };
 
 export const getBooksByUser = async (req, res) => {
-
   try {
     const userBooks = await UserBook.find({ userId: req.user._id })
       .populate("bookId")

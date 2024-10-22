@@ -86,5 +86,6 @@ export const cosineSimilarityDistance = (ratings1, ratings2) => {
   const ratingDistance = ratingDistanceSum / ratings1.length;
   const adjustedWeight = cosineSimilarity * (1 / (1 + ratingDistance));
 
-  return adjustedWeight
+
+  return adjustedWeight.toFixed(3)
 };
