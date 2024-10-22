@@ -5,16 +5,9 @@ import User from "../models/User.js";
 dotenv.config();
 
 export const authenticateToken = async (req, res, next) => {
-  let token;
+  const token = req.cookies?.jwt;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  } else if (req.cookies?.jwt) {
-    token = req.cookies.jwt;
-  } else {
+  if (!token) {
     return res.status(401).json({ error: "No token provided." });
   }
 

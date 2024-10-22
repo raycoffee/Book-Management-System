@@ -2,8 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import './SignUp.css'; // Import the CSS file
-
+import './SignUp.css';
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
   const { setIsLoggedIn } = useContext(AuthContext);
