@@ -78,11 +78,11 @@ export const signIn = async (req, res) => {
 
 export const updateFavoriteGenres = async (req, res) => {
   try {
-    const { userId } = req.params;
+
     const { favoriteGenres } = req.body;
 
     const user = await User.findByIdAndUpdate(
-      userId,
+      req.user._id,
       { favoriteGenres },
       { new: true }
     );

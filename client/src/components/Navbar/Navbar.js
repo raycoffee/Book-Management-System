@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import './Navbar.css'; 
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext.js";
+import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
@@ -9,7 +9,7 @@ function Navbar() {
 
   const handleLogout = () => {
     logOut();
-    navigate('/signin');
+    navigate("/signin");
   };
 
   return (
@@ -24,21 +24,18 @@ function Navbar() {
             <>
               <button
                 className="navbar-button"
-                onClick={() => navigate('/my-books')}
+                onClick={() => navigate("/my-books")}
               >
                 My Books
               </button>
-              <button
-                className="navbar-button"
-                onClick={handleLogout}
-              >
+              <button className="navbar-button" onClick={handleLogout}>
                 Logout
               </button>
             </>
           ) : (
             <button
               className="navbar-button"
-              onClick={() => navigate('/signin')}
+              onClick={() => navigate("/signin")}
             >
               Login
             </button>

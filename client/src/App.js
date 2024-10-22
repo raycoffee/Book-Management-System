@@ -1,14 +1,14 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import SignIn from './pages/Auth/SignIn';
-import SignUp from './pages/Auth/SignUp';
-import SelectGenres from './pages/SelectGenres';
-import MyBooks from './pages/MyBooks/MyBooks';
-import Navbar from './components/Navbar';
-import AuthProvider from './context/AuthContext.js';
-import AddBook from './pages/AddBook/AddBook';
-import BookDetails from './pages/BookDetails/BookDetails';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage/HomePage.js";
+import SignIn from "./pages/Auth/SignIn";
+import SignUp from "./pages/Auth/SignUp";
+import SelectGenres from "./pages/SelectGenres/SelectGenres.js";
+import MyBooks from "./pages/MyBooks/MyBooks";
+import Navbar from "./components/Navbar/Navbar.js";
+import AuthProvider from "./context/AuthContext.js";
+import AddBook from "./pages/AddBook/AddBook.js";
+import BookDetails from "./pages/BookDetails/BookDetails.js";
 function App() {
   return (
     <AuthProvider>
@@ -22,7 +22,6 @@ function App() {
           <Route path="/my-books" element={<MyBooks />} />
           <Route path="/add-book" element={<AddBook />} />
           <Route path="/book/:bookId" element={<BookDetails />} />
-
         </Routes>
       </Router>
     </AuthProvider>

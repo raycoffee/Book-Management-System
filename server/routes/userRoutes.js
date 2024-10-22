@@ -13,7 +13,7 @@ router.post("/register", register);
 router.post("/sign-in", signIn);
 router.post("/logout", logout);
 
-router.put("/:userId/genres", authenticateToken, updateFavoriteGenres);
+router.put("/genres", authenticateToken, updateFavoriteGenres);
 
 router.get("/isAuthenticated", authenticateToken, (req, res) => {
   res.status(200).json({

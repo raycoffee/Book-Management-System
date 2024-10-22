@@ -1,5 +1,6 @@
-import { reviewSchema } from "../models/Reviews.js";
 import UserBookMatrix from "../models/UserBookMatrix.js";
+import Book from "../models/Books.js";
+import Review from "../models/Reviews.js";
 import {
   cosineSimilarity,
   pearsonCorrelation,
@@ -22,7 +23,7 @@ export const addReviewToMatrix = async (userId, bookId, reviewId) => {
   }
 };
 
-export const removeReviewFromMatix = async (userId, bookId) => {
+export const removeReviewFromMatrix = async (userId, bookId) => {
   try {
     const userMatrix = await UserBookMatrix.findOne({ userId });
 
@@ -44,7 +45,6 @@ export const getUserRatings = async (userId) => {
   );
 
   if (!userMatrix) return null;
-
 
   return userMatrix.ratings.map((ratings) => {
     return {
@@ -94,7 +94,7 @@ export const findSimilarUsers = async (currUserId) => {
   return similarities;
 };
 
-export const recommendBooks = async (req, res) => {
+export const predictRatings = async (req, res, next) => {
   const similarUsers = await findSimilarUsers(req.user._id);
 
   if (similarUsers.length == 0) {
@@ -127,12 +127,39 @@ export const recommendBooks = async (req, res) => {
     });
   }
 
-  for (let ratings of Object.keys(predectiveRatings)) {
-    const numerator = predectiveRatings[ratings][0];
-    const denominator = predectiveRatings[ratings][1];
+  for (let bookId of Object.keys(predectiveRatings)) {
+    const numerator = predectiveRatings[bookId][0];
+    const denominator = predectiveRatings[bookId][1];
 
-    predectiveRatings[ratings] = numerator / denominator;
+    predectiveRatings[bookId] = numerator / denominator;
   }
 
-  res.status(200).json({ predectiveRatings });
+  req.predectiveRatings = predectiveRatings;
+  next();
+};
+
+export const recommendBooks = async (req, res) => {
+  try {
+    const { predectiveRatings } = req;
+    const recommendedBooks = [];
+
+    for (let bookId of Object.keys(predectiveRatings)) {
+      const book = await Book.findById(bookId);
+      if (!book) continue;
+
+      recommendedBooks.push({
+        book,
+        predictiveRating: predectiveRatings[bookId],
+      });
+    }
+
+    recommendedBooks.sort((a, b) => {
+      return b.predictiveRating - a.predictiveRating;
+    });
+
+    res.status(200).json(recommendedBooks);
+  } catch (error) {
+    console.error("Error fetching recommended books:", error);
+    res.status(500).json({ error: "Failed to fetch recommended books." });
+  }
 };

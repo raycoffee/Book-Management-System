@@ -1,7 +1,7 @@
 import Book from "../models/Books.js";
 import UserBooks from "../models/UserBooks.js";
 import Review from "../models/Reviews.js";
-import { addReviewToMatrix, removeReviewFromMatix } from "../controllers/matrixOperationsController.js";
+import { addReviewToMatrix, removeReviewFromMatrix } from "../controllers/matrixOperationsController.js";
 
 export const getReviewsByBookAuth = async (req, res) => {
 
@@ -151,7 +151,7 @@ export const deleteReview = async (req, res) => {
       { $unset: { reviewId: "" } }
     );
 
-    await removeReviewFromMatix(req.user._id, review.bookId)
+    await removeReviewFromMatrix(req.user._id, review.bookId)
 
     res.status(200).json({ message: "Review deleted successfully." });
   } catch (error) {

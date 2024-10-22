@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import "./HomePage.css"; // Import the CSS file
+import { AuthContext } from "../../context/AuthContext";
+import "./HomePage.css";
 
 function HomePage() {
   const { isLoggedIn, logOut } = useContext(AuthContext);
@@ -14,9 +14,7 @@ function HomePage() {
 
   return (
     <div className="homepage-container">
-      <h1 className="homepage-title">
-        Welcome to Your Book Management System
-      </h1>
+      <h1 className="homepage-title">Welcome to Your Book Management System</h1>
 
       {isLoggedIn ? (
         <div className="button-group">
@@ -31,10 +29,7 @@ function HomePage() {
           </button>
         </div>
       ) : (
-        <button
-          className="primary-button"
-          onClick={() => navigate("/signin")}
-        >
+        <button className="primary-button" onClick={() => navigate("/signin")}>
           Sign In to Continue
         </button>
       )}

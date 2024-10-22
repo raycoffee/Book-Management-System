@@ -19,7 +19,7 @@ function SignUp() {
       const { token, userId } = response.data;
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);
-      setIsLoggedIn(true); // Update authentication state
+      setIsLoggedIn(true);
       navigate('/select-genres');
     } catch (error) {
       console.error('Registration failed:', error);
