@@ -1,32 +1,16 @@
-/* Container for the entire component */
-.container {
-  max-width: 800px;
-  margin: 40px auto;
-  text-align: center;
+.add-book-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Error message styling */
-.error {
-  color: red;
-  font-size: 24px;
-}
-
-/* Main heading */
-.heading {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  background: linear-gradient(45deg, #6a1b9a, #8e24aa);
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-}
 
 /* Search bar container */
 .search-bar {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  margin: 50px 0;
+  width: 40%;
 }
 
 /* Search input field */

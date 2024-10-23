@@ -9,7 +9,8 @@ import Navbar from "./components/Navbar/Navbar.js";
 import AuthProvider from "./context/AuthContext.js";
 import AddBook from "./pages/AddBook/AddBook.js";
 import BookDetails from "./pages/BookDetails/BookDetails.js";
-function App() {
+
+const App = () => {
   return (
     <AuthProvider>
       <Router>

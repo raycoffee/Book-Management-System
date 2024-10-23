@@ -91,8 +91,7 @@ const AddBook = () => {
   }
 
   return (
-    <div className="container">
-      <h2 className="heading">Search and Add a Book</h2>
+    <div className="add-book-container">
       <div className="search-bar">
       <input
         type="text"
@@ -108,7 +107,7 @@ const AddBook = () => {
       <button onClick={() => handleSearch()}>Search</button>
     </div>
 
-      <BookDisplay books={recommendations} handleAddBook={handleAddBook} />
+      <BookDisplay books={recommendations} handleAddBook={handleAddBook} recommended={true} />
       <BookDisplay books={searchResults} handleAddBook={handleAddBook} />
     </div>
   );
