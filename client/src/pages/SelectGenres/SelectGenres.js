@@ -1,43 +1,21 @@
-import React, { useState, useEffect, useContext } from "react";
-import {
-  Container,
-  Grid,
-  Checkbox,
-  Typography,
-  Button,
-  FormControlLabel,
-} from "@mui/material";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-import "./SelectGenres.css";
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import axios from 'axios';
+import './SelectGenres.css';
 
 const genres = [
-  "Art",
-  "Biography",
-  "Business",
-  "Fantasy",
-  "History",
-  "Horror",
-  "Comics",
-  "Manga",
-  "Music",
-  "Philosophy",
-  "Romance",
-  "Science Fiction",
-  "Self Help",
-  "Thriller",
-  "Young Adult",
-  "Mystery",
-  "Poetry",
-  "Nonfiction",
+  "Art", "Biography", "Business", "Fantasy", "History", "Horror",
+  "Comics", "Manga", "Music", "Philosophy", "Romance", "Science Fiction",
+  "Self Help", "Thriller", "Young Adult", "Mystery", "Poetry", "Nonfiction"
 ];
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const SelectGenres = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, setUser } = useContext(AuthContext);
   const [selectedGenres, setSelectedGenres] = useState([]);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleCheckboxChange = (genre) => {
@@ -48,57 +26,75 @@ const SelectGenres = () => {
 
   const handleSubmit = async () => {
     try {
-      await axios.put(
+      const response = await axios.post(
         `${API_URL}/api/v1/users/genres`,
         { favoriteGenres: selectedGenres },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
-      navigate("/books");
+      if (response.data.status === 'success') {
+        setUser(response.data.data.user);
+        navigate('/books');
+      }
     } catch (error) {
-      console.error("Failed to save favorite genres:", error);
+      console.error('Failed to save favorite genres:', error);
+      setError(error.response?.data?.message || 'Failed to save genres');
     }
   };
 
-  return (
-    <>
-      {isLoggedIn ? (
-        <Container maxWidth="md" style={{ marginTop: "2rem" }}>
-          <Typography variant="h5" gutterBottom>
-            Select Your Favorite Genres
-          </Typography>
-          <Grid container spacing={2} style={{ marginTop: "1rem" }}>
-            {genres.map((genre) => (
-              <Grid item xs={6} sm={4} md={3} key={genre}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={selectedGenres.includes(genre)}
-                      onChange={() => handleCheckboxChange(genre)}
-                    />
-                  }
-                  label={genre}
-                />
-              </Grid>
-            ))}
-          </Grid>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            style={{ marginTop: "2rem" }}
-            disabled={selectedGenres.length === 0}
-          >
-            Save and Continue
-          </Button>
-        </Container>
-      ) : (
-        <button className="primary-button" onClick={() => navigate("/signin")}>
+  if (!isLoggedIn) {
+    return (
+      <div className="genre-selection__auth-container">
+        <button 
+          className="genre-selection__signin-btn"
+          onClick={() => navigate('/signin')}
+        >
           Sign In to Continue
         </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="genre-selection__wrapper">
+      <h2 className="genre-selection__heading">
+        Select Your Favorite Genres
+      </h2>
+      
+      {error && (
+        <div className="genre-selection__error">
+          {error}
+        </div>
       )}
-    </>
+      
+      <div className="genre-selection__grid">
+        {genres.map((genre) => (
+          <label key={genre} className="genre-selection__checkbox-label">
+            <input
+              type="checkbox"
+              className="genre-selection__checkbox-input"
+              checked={selectedGenres.includes(genre)}
+              onChange={() => handleCheckboxChange(genre)}
+            />
+            {genre}
+          </label>
+        ))}
+      </div>
+
+      <button
+        className="genre-selection__submit-btn"
+        onClick={handleSubmit}
+        disabled={selectedGenres.length === 0}
+      >
+        Save and Continue
+      </button>
+    </div>
   );
-}
+};
 
 export default SelectGenres;

@@ -1,16 +1,86 @@
+.genre-selection__wrapper {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 20px;
+}
 
+.genre-selection__heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
 
+.genre-selection__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
 
-.primary-button {
-  background: linear-gradient(45deg, #3f51b5, #757de8);
-  color: white;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+@media (min-width: 600px) {
+  .genre-selection__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .genre-selection__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.genre-selection__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
 }
 
-.primary-button:hover {
-  background-color: #303f9f;
+.genre-selection__checkbox-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.genre-selection__submit-btn {
+  background-color: #1976d2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 2rem;
+  transition: background-color 0.2s;
+}
+
+.genre-selection__submit-btn:hover {
+  background-color: #1565c0;
+}
+
+.genre-selection__submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.genre-selection__auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.genre-selection__signin-btn {
+  background-color: #1976d2;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.genre-selection__signin-btn:hover {
+  background-color: #1565c0;
 }

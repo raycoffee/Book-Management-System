@@ -6,6 +6,8 @@ import './SignUp.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+console.log(API_URL);
+
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
   const { setIsLoggedIn } = useContext(AuthContext);
