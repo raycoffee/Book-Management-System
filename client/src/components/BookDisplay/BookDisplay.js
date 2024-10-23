@@ -10,6 +10,7 @@ const BookDisplay = ({ books, handleAddBook }) => {
           <div className="book-info">
             <h3 className="book-title">{book.title}</h3>
             <p className="book-author">by {book.author}</p>
+            <p className="book-genre"><b>{book.genre}</b></p>
           </div>
           <button className="add-button" onClick={() => handleAddBook(book)}>
               Add Book

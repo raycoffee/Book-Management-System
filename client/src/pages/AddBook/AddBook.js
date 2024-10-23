@@ -46,6 +46,8 @@ const AddBook = () => {
           imageLinks,
         } = book.volumeInfo;
 
+        console.log(response.data, '😻')
+
         return {
           id: book.id,
           title: title || "No title available",
