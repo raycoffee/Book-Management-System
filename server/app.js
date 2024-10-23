@@ -4,16 +4,15 @@ import bodyParser from "body-parser";
 import bookRoutes from "./routes/bookRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import recommendationRoutes from "./routes/recommendationRoutes.js";
-import reviewRoutes from "./routes/reviewRoutes.js"
-import cookieParser from 'cookie-parser';
-
+import reviewRoutes from "./routes/reviewRoutes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost"],
     credentials: true,
   })
 );
@@ -24,7 +23,7 @@ app.use(bodyParser.json());
 app.use("/api/v1/books", bookRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/recommendations", recommendationRoutes);
-app.use("/api/v1/reviews", reviewRoutes)
+app.use("/api/v1/reviews", reviewRoutes);
 
 app.get("/", (req, res) => res.send("Book Management System API"));
 

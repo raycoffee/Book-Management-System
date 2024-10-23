@@ -4,8 +4,9 @@ import { AuthContext } from "../../context/AuthContext";
 import "./HomePage.css";
 
 function HomePage() {
-  const { isLoggedIn, logOut } = useContext(AuthContext);
+  const { isLoggedIn, logOut, user } = useContext(AuthContext);
   const navigate = useNavigate();
+
 
   const handleLogout = () => {
     logOut();
@@ -14,20 +15,27 @@ function HomePage() {
 
   return (
     <div className="homepage-container">
-      <h1 className="homepage-title">Welcome to Your Book Management System</h1>
+      <h1 className="homepage-title">Welcome {user.name}!</h1>
 
       {isLoggedIn ? (
-        <div className="button-group">
-          <button
-            className="primary-button"
-            onClick={() => navigate("/my-books")}
-          >
-            Go to My Books
-          </button>
-          <button className="outlined-button" onClick={handleLogout}>
-            Log Out
-          </button>
-        </div>
+        <>
+          {" "}
+          <div className="home-hero-img">
+          <img src="/images/hero-img.png" alt="Hero" />
+
+          </div>
+          <div className="button-group">
+            <button
+              className="primary-button"
+              onClick={() => navigate("/my-books")}
+            >
+              Go to My Books
+            </button>
+            <button className="outlined-button" onClick={handleLogout}>
+              Log Out
+            </button>
+          </div>
+        </>
       ) : (
         <button className="primary-button" onClick={() => navigate("/signin")}>
           Sign In to Continue

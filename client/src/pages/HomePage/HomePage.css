@@ -57,3 +57,7 @@
   background-color: #f0f4ff;
   border-color: #3f51b5;
 }
+
+.home-hero-img img {
+  width: 400px;
+}
