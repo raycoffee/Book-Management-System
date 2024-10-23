@@ -18,11 +18,9 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/v1/users/register`, user);
-      const { token, userId } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('userId', userId);
+      const response = await axios.post(`${API_URL}/api/v1/users/register`, user, {withCredentials: true});
       setIsLoggedIn(true);
+      setUser(response.data.user);
       navigate('/select-genres');
     } catch (error) {
       console.error('Registration failed:', error);

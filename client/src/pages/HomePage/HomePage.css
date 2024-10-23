@@ -36,6 +36,7 @@
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .primary-button:hover {
@@ -51,6 +52,8 @@
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
+  font-weight: bold;
+  background-color: white;
 }
 
 .outlined-button:hover {
@@ -59,5 +62,5 @@
 }
 
 .home-hero-img img {
-  width: 400px;
+  width: 600px;
 }

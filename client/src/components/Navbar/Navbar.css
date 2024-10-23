@@ -1,6 +1,6 @@
 
 .navbar {
-  /* background: linear-gradient(45deg, #c6a0ef, #c4a2e9); */
+  background: linear-gradient(45deg, #ffffff, #ffffff);
   padding: 10px 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: static;
@@ -17,7 +17,7 @@
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
-  color: #ffffff;
+  color: #000000;
 }
 
 .navbar-title:hover {
@@ -30,18 +30,29 @@
 }
 
 .navbar-button {
-  background: none;
+  background: linear-gradient(45deg, #4b4ff2, #757de8);
+  color: white;
+  padding: 15px 30px;
   border: none;
-  color: #ffffff;
+  border-radius: 8px;
   font-size: 1rem;
-  font-weight: bold;
   cursor: pointer;
-  padding: 10px;
-  text-transform: none;
+  font-weight: 700;
 }
 
 .navbar-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  background-color: #676af2;
+}
+
+.navbar-button.logout {
+  background: none;
+  border: 2px solid #4b4ff2;
+  color: #4b4ff2;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .navbar-button:focus {

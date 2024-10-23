@@ -16,7 +16,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-content">
         <Link to="/" className="navbar-title">
-          Book Management
+           <p>[ Book Management ]</p>
         </Link>
 
         <div className="navbar-links">
@@ -28,7 +28,7 @@ function Navbar() {
               >
                 My Books
               </button>
-              <button className="navbar-button" onClick={handleLogout}>
+              <button className="navbar-button logout" onClick={handleLogout}>
                 Logout
               </button>
             </>
