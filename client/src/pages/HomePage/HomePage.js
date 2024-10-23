@@ -7,7 +7,6 @@ function HomePage() {
   const { isLoggedIn, logOut, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-
   const handleLogout = () => {
     logOut();
     navigate("/signin");
@@ -15,14 +14,13 @@ function HomePage() {
 
   return (
     <div className="homepage-container">
-      <h1 className="homepage-title">Welcome {user.name}!</h1>
+      <h1 className="homepage-title">Welcome back, {user.name}!</h1>
 
       {isLoggedIn ? (
         <>
           {" "}
           <div className="home-hero-img">
-          <img src="/images/hero-img.png" alt="Hero" />
-
+            <img src="/images/hero-img.png" alt="Hero" />
           </div>
           <div className="button-group">
             <button
