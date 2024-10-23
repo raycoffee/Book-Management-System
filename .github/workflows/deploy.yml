@@ -44,7 +44,7 @@ jobs:
 
     - name: SSH into GCE and deploy
       run: |
-        gcloud compute ssh YOUR_VM_NAME --zone=YOUR_ZONE --command="
+        gcloud compute ssh book-management-vm --zone=asia-south1-a --command="
         sudo docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/client;
         sudo docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/server;
         sudo docker stop client || true && sudo docker rm client || true;
