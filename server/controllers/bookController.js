@@ -1,8 +1,8 @@
 import Book from "../models/Books.js";
+import axios from 'axios';
 import UserBook from "../models/UserBooks.js";
 import Review from "../models/Reviews.js";
 import dotenv from "dotenv";
-import axios from 'axios';
 
 dotenv.config();
 export const getBook = async (req, res) => {
@@ -64,7 +64,6 @@ export const getBooksByUser = async (req, res) => {
     const userBooks = await UserBook.find({ userId: req.user._id })
       .populate("bookId")
       .populate("reviewId");
-
     res.json(userBooks);
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve books." });
