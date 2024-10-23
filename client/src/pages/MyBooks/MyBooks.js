@@ -5,6 +5,8 @@ import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 import { AuthContext } from "../../context/AuthContext.js";
 import "./MyBooks.css";
 import { FaEdit, FaTrashAlt } from "react-icons/fa"; 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const MyBooks = () => {
   const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
@@ -22,7 +24,7 @@ const MyBooks = () => {
 
   const fetchBooks = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/v1/books/user`, {
+      const response = await axios.get(`${API_URL}/api/v1/books/user`, {
         withCredentials: true,
       });
       setBooks([...response.data]);
@@ -34,7 +36,7 @@ const MyBooks = () => {
   const handleDeleteReview = async (reviewId) => {
     try {
       await axios.delete(
-        `http://localhost:3001/api/v1/reviews/${reviewId}`,
+        `${API_URL}/api/v1/reviews/${reviewId}`,
         {
           withCredentials: true,
         }
@@ -55,8 +57,8 @@ const MyBooks = () => {
   const handleReviewSubmit = async () => {
     try {
       const url = selectedReview
-        ? `http://localhost:3001/api/v1/reviews/${selectedReview._id}`
-        : `http://localhost:3001/api/v1/reviews/${selectedBook._id}`;
+        ? `${API_URL}/api/v1/reviews/${selectedReview._id}`
+        : `${API_URL}/api/v1/reviews/${selectedBook._id}`;
       const method = selectedReview ? "put" : "post";
 
       await axios[method](
@@ -80,7 +82,7 @@ const MyBooks = () => {
 
   const handleDeleteBook = async (bookId) => {
     try {
-      await axios.delete(`http://localhost:3001/api/v1/books/user/${bookId}`, {
+      await axios.delete(`${API_URL}/api/v1/books/user/${bookId}`, {
         withCredentials: true,
       });
       fetchBooks();

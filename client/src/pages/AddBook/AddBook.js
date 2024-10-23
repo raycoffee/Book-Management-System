@@ -5,6 +5,8 @@ import { AuthContext } from "../../context/AuthContext";
 import BookDisplay from "../../components/BookDisplay/BookDisplay";
 import "./AddBook.css";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const AddBook = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
@@ -19,7 +21,7 @@ const AddBook = () => {
     const fetchRecommendation = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/api/v1/recommendations/matrix`,
+          `${API_URL}/api/v1/recommendations/matrix`,
           {
             withCredentials: true,
           }
@@ -45,7 +47,7 @@ const AddBook = () => {
 
       const encodedQuery = encodeURIComponent(queryParam);
       const response = await axios.get(
-        `http://localhost:3001/api/v1/books/search?q=${encodedQuery}`,
+        `${API_URL}/api/v1/books/search?q=${encodedQuery}`,
         { withCredentials: true }
       );
       setSearchResults(response.data);
@@ -70,7 +72,7 @@ const AddBook = () => {
     };
 
     try {
-      await axios.post("http://localhost:3001/api/v1/books/user", newBook, {
+      await axios.post("${API_URL}/api/v1/books/user", newBook, {
         withCredentials: true,
       });
       alert("Book added successfully!");

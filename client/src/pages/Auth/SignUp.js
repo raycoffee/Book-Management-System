@@ -3,6 +3,9 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import './SignUp.css';
+
+const API_URL = process.env.REACT_APP_API_URL;
+
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
   const { setIsLoggedIn } = useContext(AuthContext);
@@ -15,7 +18,7 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/users/register', user);
+      const response = await axios.post(`${API_URL}/api/v1/users/register`, user);
       const { token, userId } = response.data;
       localStorage.setItem('token', token);
       localStorage.setItem('userId', userId);

@@ -33,7 +33,9 @@ const genres = [
   "Nonfiction",
 ];
 
-function SelectGenres() {
+const API_URL = process.env.REACT_APP_API_URL;
+
+const SelectGenres = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ function SelectGenres() {
   const handleSubmit = async () => {
     try {
       await axios.put(
-        `http://localhost:3001/api/v1/users/genres`,
+        `${API_URL}/api/v1/users/genres`,
         { favoriteGenres: selectedGenres },
         { withCredentials: true }
       );

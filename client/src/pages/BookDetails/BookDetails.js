@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext.js"; // Make sure this is
 import axios from "axios";
 import "./BookDetails.css";
 import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
-
+const API_URL = process.env.REACT_APP_API_URL;
 const BookDetails = () => {
   const { bookId } = useParams();
   const [book, setBook] = useState(null);
@@ -12,25 +12,28 @@ const BookDetails = () => {
   const [userReview, setUserReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [bookDescription, setBookDescription] = useState("No description available");
+  const [bookDescription, setBookDescription] = useState(
+    "No description available"
+  );
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
-  
+
   const { isLoggedIn, user } = useContext(AuthContext); // Destructure user from AuthContext
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchReviews = async () => {
     try {
       const reviewEndpoint = isLoggedIn
-        ? `http://localhost:3001/api/v1/reviews/auth/${bookId}`
-        : `http://localhost:3001/api/v1/reviews/${bookId}`;
+        ? `${API_URL}/api/v1/reviews/auth/${bookId}`
+        : `${API_URL}/api/v1/reviews/${bookId}`;
 
       const reviewsResponse = await axios.get(reviewEndpoint, {
         withCredentials: true,
       });
 
-      const { reviews, averageRating, totalReviews, userReview } = reviewsResponse.data;
+      const { reviews, averageRating, totalReviews, userReview } =
+        reviewsResponse.data;
 
       // Filter out the user's review from the community reviews
       const filteredReviews = reviews.filter(
@@ -50,18 +53,21 @@ const BookDetails = () => {
     const fetchBookData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:3001/api/v1/books/${bookId}`,
-          { withCredentials: true }
-        );
+        const response = await axios.get(`${API_URL}/api/v1/books/${bookId}`, {
+          withCredentials: true,
+        });
         setBook(response.data);
 
         const googleBooksResponse = await axios.get(
-          `https://www.googleapis.com/books/v1/volumes?key=${process.env.REACT_APP_GOOGLE_API_KEY}&q=${encodeURIComponent(response.data.title)}`
+          `https://www.googleapis.com/books/v1/volumes?key=${
+            process.env.REACT_APP_GOOGLE_API_KEY
+          }&q=${encodeURIComponent(response.data.title)}`
         );
 
         const googleBooksData = googleBooksResponse.data.items[0]?.volumeInfo;
-        setBookDescription(googleBooksData?.description || "No description available");
+        setBookDescription(
+          googleBooksData?.description || "No description available"
+        );
 
         await fetchReviews();
       } catch (error) {
@@ -78,8 +84,8 @@ const BookDetails = () => {
     try {
       const method = userReview ? "put" : "post";
       const url = userReview
-        ? `http://localhost:3001/api/v1/reviews/${userReview._id}`
-        : `http://localhost:3001/api/v1/reviews/${book._id}`;
+        ? `${API_URL}//api/v1/reviews/${userReview._id}`
+        : `${API_URL}//api/v1/reviews/${book._id}`;
 
       const response = await axios[method](
         url,
@@ -105,10 +111,9 @@ const BookDetails = () => {
 
   const handleDeleteReview = async () => {
     try {
-      await axios.delete(
-        `http://localhost:3001/api/v1/reviews/${userReview._id}`,
-        { withCredentials: true }
-      );
+      await axios.delete(`${API_URL}/api/v1/reviews/${userReview._id}`, {
+        withCredentials: true,
+      });
 
       setUserReview(null);
       await fetchReviews();
@@ -186,7 +191,10 @@ const BookDetails = () => {
                 </button>
               </div>
             ) : (
-              <button className="add-review-button" onClick={() => setIsModalOpen(true)}>
+              <button
+                className="add-review-button"
+                onClick={() => setIsModalOpen(true)}
+              >
                 Add Review
               </button>
             )}

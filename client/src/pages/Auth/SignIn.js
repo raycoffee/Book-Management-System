@@ -2,7 +2,9 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.js";
-import "./SignIn.css"; // Import the CSS file
+import "./SignIn.css";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const SignIn = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -21,7 +23,7 @@ const SignIn = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/v1/users/sign-in",
+        `${API_URL}/api/v1/users/sign-in`,
         credentials,
         { withCredentials: true }
       );

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const AuthContext = createContext();
 
@@ -11,7 +12,7 @@ const AuthProvider = ({ children }) => {
     const checkAuthStatus = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3001/api/v1/users/isAuthenticated",
+          `${API_URL}/api/v1/users/isAuthenticated`,
           {
             withCredentials: true,
           }
@@ -36,18 +37,20 @@ const AuthProvider = ({ children }) => {
   const logOut = async () => {
     try {
       await axios.post(
-        "http://localhost:3001/api/v1/users/logout",
+        `${API_URL}/api/v1/users/logout`,
         {},
         { withCredentials: true }
       );
 
-      setIsLoggedIn(false)
-      setUser(null)
+      setIsLoggedIn(false);
+      setUser(null);
     } catch (error) {}
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, logOut, setUser }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, setIsLoggedIn, user, logOut, setUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
