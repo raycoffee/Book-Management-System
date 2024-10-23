@@ -25,14 +25,16 @@ jobs:
       run: echo "version=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
 
     - name: Google Auth
-      uses: 'google-github-actions/auth@v1'
+      id: auth
+      uses: google-github-actions/auth@v1.1.1
       with:
         credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Set up Cloud SDK
-      uses: 'google-github-actions/setup-gcloud@v1'
+      uses: google-github-actions/setup-gcloud@v1.1.1
       with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        install_components: 'beta'
 
     - name: Configure Docker authentication
       run: |
@@ -51,14 +53,16 @@ jobs:
 
     steps:
     - name: Google Auth
-      uses: 'google-github-actions/auth@v1'
+      id: auth
+      uses: google-github-actions/auth@v1.1.1
       with:
         credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Set up Cloud SDK
-      uses: 'google-github-actions/setup-gcloud@v1'
+      uses: google-github-actions/setup-gcloud@v1.1.1
       with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        install_components: 'beta'
 
     - name: Create deploy script
       run: |
@@ -74,16 +78,7 @@ jobs:
         # Kill any process using port 80
         sudo lsof -t -i:80 | xargs -r sudo kill -9 || true
         
-        # Stop and remove all containers using these ports (in case Docker didn't clean up properly)
-        for container in $(sudo docker ps -q); do
-          if sudo docker port $container | grep -E '(3001|80)'; then
-            echo "Stopping container $container"
-            sudo docker stop $container || true
-            sudo docker rm $container || true
-          fi
-        done
-        
-        # Remove existing containers by name (if they exist)
+        # Stop and remove existing containers
         sudo docker stop client 2>/dev/null || true
         sudo docker rm client 2>/dev/null || true
         sudo docker stop server 2>/dev/null || true
