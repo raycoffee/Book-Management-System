@@ -14,7 +14,7 @@ function HomePage() {
 
   return (
     <div className="homepage-container">
-      <h1 className="homepage-title">Welcome back, {user.name}!</h1>
+      <h1 className="homepage-title">Hello, {user?.name}!</h1>
 
       {isLoggedIn ? (
         <>
