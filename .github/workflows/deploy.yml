@@ -1,0 +1,54 @@
+name: CI/CD Pipeline to GCE
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+
+    - name: Authenticate Docker to Artifact Registry
+      run: gcloud auth configure-docker asia-south1-docker.pkg.dev
+
+    - name: Build and push client Docker image
+      run: |
+        docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/client ./client
+        docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/client
+
+    - name: Build and push server Docker image
+      run: |
+        docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/server ./server
+        docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/server
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+
+    - name: SSH into GCE and deploy
+      run: |
+        gcloud compute ssh YOUR_VM_NAME --zone=YOUR_ZONE --command="
+        sudo docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/client;
+        sudo docker pull asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/server;
+        sudo docker stop client || true && sudo docker rm client || true;
+        sudo docker stop server || true && sudo docker rm server || true;
+        sudo docker run -d -p 80:80 asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/client;
+        sudo docker run -d -p 3001:3001 asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/docker-repo/server;
+        "
