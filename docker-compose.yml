@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  server:
+    build: ./server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+    networks:
+      - app-network
+
+client:
+  build: ./client
+  ports:
+    - "3000:80"
+  networks:
+   - app-network
+
+networks:
+  app-network:
+    driver: bridge
