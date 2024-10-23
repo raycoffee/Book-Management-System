@@ -64,8 +64,26 @@ jobs:
       run: |
         cat > deploy.sh << 'EOF'
         #!/bin/bash
+        set -e
+
+        echo "Cleaning up existing containers and processes..."
         
-        # Stop and remove existing containers (ignore errors)
+        # Kill any process using port 3001
+        sudo lsof -t -i:3001 | xargs -r sudo kill -9 || true
+        
+        # Kill any process using port 80
+        sudo lsof -t -i:80 | xargs -r sudo kill -9 || true
+        
+        # Stop and remove all containers using these ports (in case Docker didn't clean up properly)
+        for container in $(sudo docker ps -q); do
+          if sudo docker port $container | grep -E '(3001|80)'; then
+            echo "Stopping container $container"
+            sudo docker stop $container || true
+            sudo docker rm $container || true
+          fi
+        done
+        
+        # Remove existing containers by name (if they exist)
         sudo docker stop client 2>/dev/null || true
         sudo docker rm client 2>/dev/null || true
         sudo docker stop server 2>/dev/null || true
@@ -78,9 +96,16 @@ jobs:
         CLIENT_IMAGE="asia-south1-docker.pkg.dev/$1/docker-repo/client:$2"
         SERVER_IMAGE="asia-south1-docker.pkg.dev/$1/docker-repo/server:$2"
         
+        echo "Starting new containers..."
+        
         # Pull and run new containers
+        echo "Starting client..."
         sudo docker run -d --name client -p 80:80 "${CLIENT_IMAGE}"
+        
+        echo "Starting server..."
         sudo docker run -d --name server -p 3001:3001 "${SERVER_IMAGE}"
+        
+        echo "Deployment complete!"
         EOF
 
     - name: Deploy to VM
