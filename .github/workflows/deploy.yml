@@ -3,8 +3,6 @@ name: CI/CD Pipeline to GCE
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 env:
   REGISTRY: asia-south1-docker.pkg.dev
@@ -15,16 +13,18 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Set version
+      id: set-version
+      run: echo "version=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
     - name: Google Auth
-      id: auth
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
@@ -38,31 +38,19 @@ jobs:
       run: |
         gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
-    - name: Build and push client Docker image
+    - name: Build and push images
       run: |
-        VERSION=$(echo $GITHUB_SHA | cut -c1-7)
-        docker build -t ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:$VERSION ./client
-        docker push ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:$VERSION
-        echo "CLIENT_VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Build and push server Docker image
-      run: |
-        VERSION=$(echo $GITHUB_SHA | cut -c1-7)
-        docker build -t ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:$VERSION ./server
-        docker push ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:$VERSION
-        echo "SERVER_VERSION=$VERSION" >> $GITHUB_ENV
+        docker build -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ steps.set-version.outputs.version }}" ./client
+        docker push "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ steps.set-version.outputs.version }}"
+        docker build -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ steps.set-version.outputs.version }}" ./server
+        docker push "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ steps.set-version.outputs.version }}"
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: 'read'
-      id-token: 'write'
 
     steps:
     - name: Google Auth
-      id: auth
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
@@ -72,13 +60,35 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Deploy to GCE
+    - name: Create deploy script
       run: |
+        cat > deploy.sh << 'EOF'
+        #!/bin/bash
+        
+        # Stop and remove existing containers (ignore errors)
+        sudo docker stop client 2>/dev/null || true
+        sudo docker rm client 2>/dev/null || true
+        sudo docker stop server 2>/dev/null || true
+        sudo docker rm server 2>/dev/null || true
+        
+        # Configure docker authentication
+        sudo gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+        
+        # Set the full image names
+        CLIENT_IMAGE="asia-south1-docker.pkg.dev/$1/docker-repo/client:$2"
+        SERVER_IMAGE="asia-south1-docker.pkg.dev/$1/docker-repo/server:$2"
+        
+        # Pull and run new containers
+        sudo docker run -d --name client -p 80:80 "${CLIENT_IMAGE}"
+        sudo docker run -d --name server -p 3001:3001 "${SERVER_IMAGE}"
+        EOF
+
+    - name: Deploy to VM
+      run: |
+        # Copy the script to the VM
+        gcloud compute scp deploy.sh ${{ env.GCE_INSTANCE }}:~/deploy.sh --zone=${{ env.GCE_ZONE }}
+        
+        # Make script executable and run it
         gcloud compute ssh ${{ env.GCE_INSTANCE }} --zone=${{ env.GCE_ZONE }} --command="
-        sudo docker pull ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ env.CLIENT_VERSION }};
-        sudo docker pull ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ env.SERVER_VERSION }};
-        sudo docker stop client || true && sudo docker rm client || true;
-        sudo docker stop server || true && sudo docker rm server || true;
-        sudo docker run -d --name client -p 80:80 ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ env.CLIENT_VERSION }};
-        sudo docker run -d --name server -p 3001:3001 ${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ env.SERVER_VERSION }};
-        "
+        chmod +x ~/deploy.sh && 
+        ~/deploy.sh '${{ secrets.GCP_PROJECT_ID }}' '${{ needs.build.outputs.version }}'"
