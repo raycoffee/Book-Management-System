@@ -1,16 +1,19 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useSearchParams  } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import BookDisplay from "../../components/BookDisplay/BookDisplay";
 import "./AddBook.css";
 
 const AddBook = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+
   const [searchResults, setSearchResults] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthContext);
+
 
   useEffect(() => {
     const fetchRecommendation = async () => {
@@ -28,38 +31,29 @@ const AddBook = () => {
       }
     };
     fetchRecommendation();
+
+    const query = searchParams.get("q");
+    if (query) {
+      handleSearch(query);
+    }
   }, []);
 
-  const handleSearch = async () => {
+  const handleSearch = async (queryParam = searchQuery) => {
+    if (!queryParam) return;
+    
     try {
+
+      const encodedQuery = encodeURIComponent(queryParam);
       const response = await axios.get(
-        `https://www.googleapis.com/books/v1/volumes?key=${process.env.REACT_APP_GOOGLE_API_KEY}&q=${searchQuery}`
+        `http://localhost:3001/api/v1/books/search?q=${encodedQuery}`,
+        { withCredentials: true }
       );
-
-      const filteredRes = response.data.items.map((book) => {
-        const {
-          title,
-          authors,
-          publishedDate,
-          industryIdentifiers,
-          categories,
-          imageLinks,
-        } = book.volumeInfo;
-
-        return {
-          id: book.id,
-          title: title || "No title available",
-          author: authors?.join(", ") || "Unknown",
-          published_date: publishedDate || "N/A",
-          ISBN: industryIdentifiers?.[0]?.identifier || "N/A",
-          genre: categories?.[0] || "Unknown",
-          thumbnail: imageLinks?.thumbnail || "https://via.placeholder.com/150",
-        };
-      });
-
-      setSearchResults(filteredRes || []);
+      setSearchResults(response.data);
+      
+      // Update URL with encoded search query
+      setSearchParams({ q: queryParam });
     } catch (error) {
-      console.error("Error fetching books from Google Books API:", error);
+      console.error("Error fetching books:", error);
     }
   };
 
@@ -97,16 +91,20 @@ const AddBook = () => {
   return (
     <div className="container">
       <h2 className="heading">Search and Add a Book</h2>
-
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search for Books"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
-      </div>
+      <input
+        type="text"
+        placeholder="Search for Books"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleSearch();
+          }
+        }}
+      />
+      <button onClick={() => handleSearch()}>Search</button>
+    </div>
 
       <BookDisplay books={recommendations} handleAddBook={handleAddBook} />
       <BookDisplay books={searchResults} handleAddBook={handleAddBook} />

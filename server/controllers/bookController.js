@@ -1,7 +1,10 @@
 import Book from "../models/Books.js";
 import UserBook from "../models/UserBooks.js";
 import Review from "../models/Reviews.js";
+import dotenv from "dotenv";
+import axios from 'axios';
 
+dotenv.config();
 export const getBook = async (req, res) => {
   try {
     const { bookId } = req.params;
@@ -93,5 +96,51 @@ export const deleteBookByUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete user book entry." });
+  }
+};
+
+export const searchBooks = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q) {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const response = await axios.get(
+      `https://www.googleapis.com/books/v1/volumes`,
+      {
+        params: {
+          q,
+          key: process.env.GOOGLE_API_KEY,
+        },
+      }
+    );
+
+    const filteredResults = response.data.items.map((book) => {
+      const {
+        title,
+        authors,
+        publishedDate,
+        industryIdentifiers,
+        categories,
+        imageLinks,
+      } = book.volumeInfo;
+
+      return {
+        id: book.id,
+        title: title || "No title available",
+        author: authors?.join(", ") || "Unknown",
+        published_date: publishedDate || "N/A",
+        ISBN: industryIdentifiers?.[0]?.identifier || "N/A",
+        genre: categories?.[0] || "Unknown",
+        thumbnail: imageLinks?.thumbnail || "https://via.placeholder.com/150",
+      };
+    });
+
+    res.json(filteredResults || []);
+  } catch (error) {
+    console.error("Error searching books:", error);
+    res.status(500).json({ error: "Failed to search books" });
   }
 };
