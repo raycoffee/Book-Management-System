@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.js";
@@ -8,8 +8,15 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const SignIn = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { setIsLoggedIn, setUser, user, isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('whyy', user, isLoggedIn)
+    if (isLoggedIn && user) {
+      navigate("/");
+    }
+  }, [user, isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     setCredentials((prevCredentials) => ({
@@ -27,11 +34,9 @@ const SignIn = () => {
         credentials,
         { withCredentials: true }
       );
-
       setIsLoggedIn(true);
-      setUser(response.data.user);
 
-      navigate("/");
+      setUser(response.data.data.user);
     } catch (error) {
       console.error("Login failed:", error);
     }

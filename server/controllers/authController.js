@@ -76,32 +76,49 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const updateFavoriteGenres = async (req, res) => {
+export const updateUserGenres = async (req, res) => {
   try {
-
     const { favoriteGenres } = req.body;
-
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { favoriteGenres },
-      { new: true }
-    );
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
+    
+    // Validate input
+    if (!Array.isArray(favoriteGenres)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Favorite genres must be an array'
+      });
     }
 
+    // Update user with new genres
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { favoriteGenres },
+      { 
+        new: true,
+        runValidators: true
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+      });
+    }
+
+    // Send response with updated user
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
-        user,
-      },
+        user: updatedUser
+      }
     });
   } catch (error) {
-    res.status(500).json({ error: "Failed to update favorite genres." });
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
   }
 };
-
 export const logout = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,

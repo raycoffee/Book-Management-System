@@ -8,6 +8,8 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+  min-height: 80vh; /* Add minimum height */
+  justify-content: center; /* Center content vertically */
 }
 
 /* Title styling */

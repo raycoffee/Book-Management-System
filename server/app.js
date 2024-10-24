@@ -16,6 +16,7 @@ app.use(
       "http://34.47.130.229", 
       "http://34.47.130.229:80", 
       "http://34.47.130.229:3001",
+      "http://localhost"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

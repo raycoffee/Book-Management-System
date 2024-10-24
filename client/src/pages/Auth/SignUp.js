@@ -8,7 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 function SignUp() {
   const [user, setUser] = useState({ name: '', email: '', password: '' });
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const { setIsLoggedIn, setUser: setAuthUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,9 +18,15 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/v1/users/register`, user, {withCredentials: true});
+      const response = await axios.post(`${API_URL}/api/v1/users/register`, user, {
+        withCredentials: true
+      });
+      
+      
       setIsLoggedIn(true);
-      setUser(response.data.user);
+      setAuthUser(response.data.user); 
+      
+     
       navigate('/select-genres');
     } catch (error) {
       console.error('Registration failed:', error);

@@ -1,7 +1,73 @@
+.genre-selection__wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  min-height: 80vh;
+  justify-content: center;
+}
 
+.genre-selection__heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #3f51b5;
+  background: linear-gradient(45deg, #3f51b5, #757de8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
 
+.genre-selection__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+  width: 100%;
+}
 
-.primary-button {
+@media (min-width: 600px) {
+  .genre-selection__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .genre-selection__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.genre-selection__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  padding: 1rem;
+  border: 2px solid #757de8;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #757de8;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.genre-selection__checkbox-label:hover {
+  background-color: #f0f4ff;
+  border-color: #3f51b5;
+}
+
+.genre-selection__checkbox-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #3f51b5;
+}
+
+.genre-selection__submit-btn {
   background: linear-gradient(45deg, #3f51b5, #757de8);
   color: white;
   padding: 15px 30px;
@@ -9,8 +75,41 @@
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
+  font-weight: bold;
+  margin-top: 2rem;
+  transition: background-color 0.2s;
 }
 
-.primary-button:hover {
-  background-color: #303f9f;
+.genre-selection__submit-btn:hover {
+  opacity: 0.9;
+}
+
+.genre-selection__submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.genre-selection__auth-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 2rem;
+}
+
+.genre-selection__signin-btn {
+  background: linear-gradient(45deg, #3f51b5, #757de8);
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.genre-selection__signin-btn:hover {
+  opacity: 0.9;
 }

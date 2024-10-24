@@ -2,7 +2,7 @@ import express from "express";
 import {
   register,
   signIn,
-  updateFavoriteGenres,
+  updateUserGenres,
   logout,
 } from "../controllers/authController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
@@ -13,7 +13,7 @@ router.post("/register", register);
 router.post("/sign-in", signIn);
 router.post("/logout", logout);
 
-router.put("/genres", authenticateToken, updateFavoriteGenres);
+router.post("/genres", authenticateToken,updateUserGenres);
 
 router.get("/isAuthenticated", authenticateToken, (req, res) => {
   res.status(200).json({
