@@ -1,30 +1,29 @@
-
+/* Navbar.css */
 .navbar {
   background: linear-gradient(45deg, #ffffff, #ffffff);
   padding: 10px 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: static;
   width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 .navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .navbar-title {
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
-  color: #3f51b5;
   background: linear-gradient(45deg, #3f51b5, #757de8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.navbar-title:hover {
-  color: #bbdefb; /* Lighter hover effect */
+  z-index: 2;
 }
 
 .navbar-links {
@@ -41,23 +40,86 @@
   font-size: 1rem;
   cursor: pointer;
   font-weight: 700;
+  transition: opacity 0.3s ease;
 }
 
 .navbar-button:hover {
-  cursor: pointer;
-  background-color: #676af2;
+  opacity: 0.9;
 }
 
 .navbar-button.logout {
   background: none;
   border: 2px solid #4b4ff2;
   color: #4b4ff2;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
 }
 
-.navbar-button:focus {
-  outline: none;
+.navbar-button.logout:hover {
+  background-color: rgba(75, 79, 242, 0.1);
+}
+
+/* Hamburger Menu Styles */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+}
+
+.bar {
+  width: 100%;
+  height: 3px;
+  background-color: #4b4ff2;
+  transition: all 0.3s ease-in-out;
+  border-radius: 2px;
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: white;
+    padding: 20px;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-150%);
+    transition: transform 0.3s ease-in-out;
+    opacity: 0;
+  }
+
+  .navbar-links.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Hamburger Animation */
+  .bar.open:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+
+  .bar.open:nth-child(2) {
+    opacity: 0;
+  }
+
+  .bar.open:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  .navbar-button {
+    width: 100%;
+    text-align: center;
+  }
 }
