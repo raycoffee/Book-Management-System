@@ -18,6 +18,7 @@ const AuthProvider = ({ children }) => {
           }
         );
 
+  
         if (response.data.isAuthenticated) {
           setIsLoggedIn(true);
           setUser(response.data.user);
@@ -26,6 +27,7 @@ const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
+        
         console.log("Error checking auth", error);
         setIsLoggedIn(false);
         setUser(null);

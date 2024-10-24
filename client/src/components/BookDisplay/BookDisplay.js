@@ -2,10 +2,9 @@ import React from "react";
 import "./BookDisplay.css";
 
 const BookDisplay = ({ books, handleAddBook, recommended, header }) => {
-
   return (
     <>
-      {header && (
+      {header && books.length > 0 && (
         <div className="book-display-title">
           <h2>{header}</h2>
         </div>

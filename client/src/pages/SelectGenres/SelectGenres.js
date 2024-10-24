@@ -39,7 +39,7 @@ const SelectGenres = () => {
 
       if (response.data.status === 'success') {
         setUser(response.data.data.user);
-        navigate('/books');
+        navigate('/my-books');
       }
     } catch (error) {
       console.error('Failed to save favorite genres:', error);
