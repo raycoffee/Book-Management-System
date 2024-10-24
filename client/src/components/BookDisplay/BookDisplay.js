@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate, Link } from "react-router-dom";
 import "./BookDisplay.css";
 
 const BookDisplay = ({ books, handleAddBook, recommended, header }) => {
+  const navigate = useNavigate();
   return (
     <>
       {header && books.length > 0 && (
@@ -18,6 +20,7 @@ const BookDisplay = ({ books, handleAddBook, recommended, header }) => {
             <img src={book.thumbnail} alt={book.title} className="book-cover" />
             <div className="book-info">
               <h3 className="book-title">
+                
                 {book.title.split(" ").length > 20
                   ? book.title.split(" ").slice(0, 20).join(" ") + "..."
                   : book.title}
