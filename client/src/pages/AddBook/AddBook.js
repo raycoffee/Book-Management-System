@@ -64,7 +64,6 @@ const AddBook = () => {
       );
       setSearchResults(response.data);
 
-      // Update URL with encoded search query
       setSearchParams({ q: queryParam });
     } catch (error) {
       console.error("Error fetching books:", error);

@@ -18,7 +18,6 @@ export const cosineSimilarity = (ratings1, ratings2) => {
 };
 
 export const pearsonCorrelation = (ratings1, ratings2) => {
-  // Ensure both arrays have the same length
   if (ratings1.length !== ratings2.length) {
     throw new Error("Ratings arrays must have the same length");
   }
@@ -53,15 +52,13 @@ export const pearsonCorrelation = (ratings1, ratings2) => {
 
   const numerator = pSum - (sum1 * sum2) / ratingsLen;
 
-  // Calculate denominator
   const denominator = Math.sqrt(
     (sum1Sq - sum1 ** 2 / ratingsLen) * (sum2Sq - sum2 ** 2 / ratingsLen)
   );
 
-  // Avoid division by zero
   if (denominator === 0) return 0;
 
-  // Return Pearson correlation coefficient
+
   return numerator / denominator;
 };
 
