@@ -12,7 +12,7 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('whyy', user, isLoggedIn)
+
     if (isLoggedIn && user) {
       navigate("/");
     }

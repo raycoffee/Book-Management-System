@@ -110,7 +110,7 @@ const MyBooks = () => {
                 className="delete-book-button"
                 onClick={() => handleDeleteBook(userBook?._id)}
               >
-                <FaTrashAlt /> 
+                <FaTrashAlt /> {/* Add delete icon */}
               </button>
               <img
                 className="book-image"

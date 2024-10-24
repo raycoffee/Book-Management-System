@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar/Navbar.js";
 import AuthProvider from "./context/AuthContext.js";
 import AddBook from "./pages/AddBook/AddBook.js";
 import BookDetails from "./pages/BookDetails/BookDetails.js";
+import ReviewMatrix from "./pages/ReviewMatrix/ReviewMatrix.js";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/my-books" element={<MyBooks />} />
           <Route path="/add-book" element={<AddBook />} />
           <Route path="/book/:bookId" element={<BookDetails />} />
+          <Route path="/review-matrix" element={<ReviewMatrix />} />
         </Routes>
       </Router>
     </AuthProvider>

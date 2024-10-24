@@ -32,7 +32,11 @@ const AddBook = () => {
               withCredentials: true,
             }
           );
-          setRecommendations(matrixResponse.data.map((x) => x.book));
+
+          setRecommendations(matrixResponse.data.map(item => ({
+            ...item.book,
+            predictiveRating: item.predictiveRating
+          })));
 
           const genreResponse = await axios.get(
             `${API_URL}/api/v1/books/search-genre`,

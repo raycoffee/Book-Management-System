@@ -34,6 +34,10 @@ const BookDisplay = ({ books, handleAddBook, recommended, header }) => {
               <p className="book-genre">
                 <b>{book.genre}</b>
               </p>
+              {book.predictiveRating && (
+                <p>Predictive rating: <b><i>{book.predictiveRating?.toFixed(3)} stars</i></b></p>
+              )}
+              
             </div>
             <button className="add-button" onClick={() => handleAddBook(book)}>
               Add Book
