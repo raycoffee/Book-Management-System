@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 import { AuthContext } from "../../context/AuthContext.js";
 import "./MyBooks.css";
-import { FaEdit, FaTrashAlt } from "react-icons/fa"; 
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const MyBooks = () => {
@@ -35,12 +35,9 @@ const MyBooks = () => {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      await axios.delete(
-        `${API_URL}/api/v1/reviews/${reviewId}`,
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.delete(`${API_URL}/api/v1/reviews/${reviewId}`, {
+        withCredentials: true,
+      });
       fetchBooks();
     } catch (error) {
       console.error("Failed to delete review:", error);
@@ -95,7 +92,10 @@ const MyBooks = () => {
     <div className="my-books-container">
       <div className="my-books-header">
         <h1 className="my-books-title">My Books</h1>
-        <button className="add-book-button" onClick={() => navigate("/add-book")}>
+        <button
+          className="add-book-button"
+          onClick={() => navigate("/add-book")}
+        >
           <span className="add-icon">+</span> Add Book
         </button>
       </div>
@@ -103,54 +103,60 @@ const MyBooks = () => {
         {books?.map((book) => {
           const userReview = book.reviewId;
           const userBook = book.bookId;
-  
+
           return (
             <div className="book-card" key={userBook?._id}>
+              <button
+                className="delete-book-button"
+                onClick={() => handleDeleteBook(userBook?._id)}
+              >
+                <FaTrashAlt /> 
+              </button>
               <img
                 className="book-image"
                 src={userBook?.thumbnail || "https://via.placeholder.com/150"}
                 alt={userBook?.title}
               />
               <div className="book-content">
-                <Link to={`/book/${userBook?._id}`} className="book-title">
-                  {userBook?.title}
-                </Link>
-                <p className="book-author">{userBook?.author}</p>
-                <button
-                  className="delete-book-button"
-                  onClick={() => handleDeleteBook(userBook?._id)}
-                >
-                  <FaTrashAlt /> {/* Add delete icon */}
-                </button>
-                {userReview ? (
-                  <div className="review-box">
-                    <p className="review-text">
-                      {userReview?.username}: {userReview?.comment} (
-                      {userReview?.rating} Stars)
-                    </p>
-                    <div className="review-actions">
-                      <button
-                        className="edit-review-button"
-                        onClick={() => handleEditReview(userBook, userReview)}
-                      >
-                        <FaEdit /> {/* Add edit icon */}
-                      </button>
-                      <button
-                        className="delete-review-button"
-                        onClick={() => handleDeleteReview(userReview?._id)}
-                      >
-                        <FaTrashAlt /> {/* Add delete icon */}
-                      </button>
+                <div className="book-detail-section">
+                  {" "}
+                  <Link to={`/book/${userBook?._id}`} className="book-title">
+                    {userBook?.title}
+                  </Link>
+                  <p className="book-author">{userBook?.author}</p>
+                </div>
+
+                <div className="book-review-section">
+                  {userReview ? (
+                    <div className="review-box">
+                      <p className="review-text">
+                        {userReview?.username}: {userReview?.comment} (
+                        {userReview?.rating} Stars)
+                      </p>
+                      <div className="review-actions">
+                        <button
+                          className="edit-review-button"
+                          onClick={() => handleEditReview(userBook, userReview)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="delete-review-button"
+                          onClick={() => handleDeleteReview(userReview?._id)}
+                        >
+                          <FaTrashAlt /> {/* Add delete icon */}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <button
-                    className="write-review-button"
-                    onClick={() => setSelectedBook(userBook)}
-                  >
-                    Write a Review
-                  </button>
-                )}
+                  ) : (
+                    <button
+                      className="write-review-button"
+                      onClick={() => setSelectedBook(userBook)}
+                    >
+                      Write a Review
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

@@ -2,27 +2,29 @@
 display: flex;
 flex-direction: column;
 align-items: center;
- 
+padding: 20px 0;
 }
 
 .my-books-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 30px 0 50px 0;
+  gap: 30px;
 }
 
 .my-books-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #4a148c; /* Darker shade of purple */
 }
 
 .add-book-button {
-  background: linear-gradient(45deg, #8e24aa, #d81b60);
+  background: linear-gradient(45deg, #4b4ff2, #757de8);
   color: white;
   border: none;
   padding: 10px 25px;
-  border-radius: 30px;
+  border-radius: 15px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
@@ -33,7 +35,7 @@ align-items: center;
 }
 
 .add-book-button:hover {
-  background: linear-gradient(45deg, #7b1fa2, #c2185b);
+  background: linear-gradient(45deg, #4b4ff2, #676dc7);
   transform: translateY(-4px); /* Gives a raised effect on hover */
 }
 
@@ -61,10 +63,10 @@ width: 80%;
   transition: box-shadow 0.3s ease;
   border-radius: 15px;
   width: 300px;
+  position: relative;
 }
 
 .book-card:hover {
-  transform: translateY(-10px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -78,13 +80,16 @@ width: 80%;
 .book-content {
   padding: 20px;
   text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .book-title {
   color: #4a148c;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1rem;
   margin-bottom: 10px;
 }
 
@@ -119,6 +124,21 @@ width: 80%;
 .delete-review-button:hover {
   background-color: #f3e5f5;
   transform: translateY(-3px);
+}
+
+.delete-book-button {
+  top: 0px;
+  left: 90%;
+  margin: 0;
+  position: absolute;
+  background-color: #e54643;
+  color: white;
+  border: none;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.delete-book-button:hover {
+  background-color: #c43331;
 }
 
 .review-box {

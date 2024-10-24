@@ -6,6 +6,15 @@
   margin: 20px 0;
 }
 
+.book-display-title {
+  background-color: white;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  border: 1px solid black;
+}
+
 .book-item, .book-item-recommended {
   display: flex;
   flex-direction: column;

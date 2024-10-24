@@ -4,14 +4,18 @@ import {
   getBooksByUser,
   deleteBookByUser,
   getBook,
-  searchBooks
+  searchBooks,
+  getBookDetails,
+searchBooksByGenre
 } from "../controllers/bookController.js";
 
 import { authenticateToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/search", authenticateToken, searchBooks); // Add this new route
+router.get("/search", authenticateToken, searchBooks)
+router.get("/search-genre", authenticateToken, searchBooksByGenre)
+router.get("/get-details", getBookDetails)
 
 router.post("/user", authenticateToken, addBookForUser);
 router.get("/user", authenticateToken, getBooksByUser);

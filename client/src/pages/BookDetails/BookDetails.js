@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext.js"; // Make sure this is imported correctly
+import { AuthContext } from "../../context/AuthContext.js";
 import axios from "axios";
 import "./BookDetails.css";
 import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 const API_URL = process.env.REACT_APP_API_URL;
+
 const BookDetails = () => {
   const { bookId } = useParams();
   const [book, setBook] = useState(null);
@@ -12,14 +13,12 @@ const BookDetails = () => {
   const [userReview, setUserReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [bookDescription, setBookDescription] = useState(
-    "No description available"
-  );
+  const [bookDescription, setBookDescription] = useState("No description available");
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
 
-  const { isLoggedIn, user } = useContext(AuthContext); // Destructure user from AuthContext
+  const { isLoggedIn, user } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchReviews = async () => {
@@ -32,18 +31,16 @@ const BookDetails = () => {
         withCredentials: true,
       });
 
-      const { reviews, averageRating, totalReviews, userReview } =
-        reviewsResponse.data;
+      const { reviews, averageRating, totalReviews, userReview } = reviewsResponse.data;
 
-      // Filter out the user's review from the community reviews
       const filteredReviews = reviews.filter(
-        (review) => review.userId !== user?._id // Use user._id from AuthContext to filter
+        (review) => review.userId !== user?._id
       );
 
       setReviews(filteredReviews);
       setAverageRating(averageRating);
       setTotalReviews(totalReviews);
-      setUserReview(userReview); // Separate user review
+      setUserReview(userReview);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     }
@@ -57,18 +54,14 @@ const BookDetails = () => {
           withCredentials: true,
         });
         setBook(response.data);
-
-        const googleBooksResponse = await axios.get(
-          `https://www.googleapis.com/books/v1/volumes?key=${
-            process.env.REACT_APP_GOOGLE_API_KEY
-          }&q=${encodeURIComponent(response.data.title)}`
-        );
-
-        const googleBooksData = googleBooksResponse.data.items[0]?.volumeInfo;
-        setBookDescription(
-          googleBooksData?.description || "No description available"
-        );
-
+  
+        const bookDetailsResponse = await axios.get(`${API_URL}/api/v1/books/get-details`, {
+          params: { title: response.data.title },
+          withCredentials: true,
+        });
+        
+        setBookDescription(bookDetailsResponse.data.description || "No description available");
+  
         await fetchReviews();
       } catch (error) {
         console.error("Error fetching book or reviews:", error);
@@ -76,16 +69,16 @@ const BookDetails = () => {
         setLoading(false);
       }
     };
-
+  
     fetchBookData();
-  }, [bookId, isLoggedIn, user]); // Add user as dependency
+  }, [bookId, isLoggedIn, user]);
 
   const handleReviewSubmit = async () => {
     try {
       const method = userReview ? "put" : "post";
       const url = userReview
-        ? `${API_URL}//api/v1/reviews/${userReview._id}`
-        : `${API_URL}//api/v1/reviews/${book._id}`;
+        ? `${API_URL}/api/v1/reviews/${userReview._id}`
+        : `${API_URL}/api/v1/reviews/${book._id}`;
 
       const response = await axios[method](
         url,
@@ -94,11 +87,7 @@ const BookDetails = () => {
       );
 
       const updatedReview = response.data;
-
-      // Update the userReview state immediately
       setUserReview(updatedReview);
-
-      // Refetch all reviews to ensure consistency
       await fetchReviews();
 
       setRating(0);
@@ -125,7 +114,6 @@ const BookDetails = () => {
     }
   };
 
-  // Display a loader until user and user.id are available
   if (user === null || user?._id === undefined) {
     return (
       <div className="loading-container">
@@ -152,7 +140,7 @@ const BookDetails = () => {
   }
 
   return (
-    <div className="container">
+    <div className="book-details-container">
       <div className="book-details">
         <img
           src={book.thumbnail || "https://via.placeholder.com/150"}
@@ -162,10 +150,10 @@ const BookDetails = () => {
 
         <div className="book-info">
           <h2 className="book-title">{book.title}</h2>
-          <h4 className="book-author">{book.author}</h4>
+          <h4 className="book-author">by {book.author}</h4>
           <div className="rating-section">
             <span className="rating-value">
-              {averageRating.toFixed(2)} ({totalReviews} reviews)
+              ★ {averageRating.toFixed(2)} · {totalReviews} reviews
             </span>
           </div>
           <p className="book-description">{bookDescription}</p>
@@ -174,21 +162,23 @@ const BookDetails = () => {
             <h3>Your Review</h3>
             {userReview ? (
               <div className="user-review">
-                <p>{userReview.comment}</p>
-                <span className="user-rating">Rating: {userReview.rating}</span>
-                <button
-                  className="edit-button"
-                  onClick={() => {
-                    setRating(userReview.rating);
-                    setComment(userReview.comment);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button className="delete-button" onClick={handleDeleteReview}>
-                  Delete
-                </button>
+                <span className="user-rating">★ {userReview.rating}</span>
+                <p className="user-comment">{userReview.comment}</p>
+                <div className="user-review-buttons">
+                  <button
+                    className="edit-button"
+                    onClick={() => {
+                      setRating(userReview.rating);
+                      setComment(userReview.comment);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button className="delete-button" onClick={handleDeleteReview}>
+                    Delete
+                  </button>
+                </div>
               </div>
             ) : (
               <button
@@ -203,13 +193,15 @@ const BookDetails = () => {
           <div className="community-reviews-section">
             <h3>Community Reviews</h3>
             {reviews.length === 0 ? (
-              <p>No reviews yet.</p>
+              <p className="no-reviews">No reviews yet.</p>
             ) : (
               reviews.map((review) => (
                 <div key={review._id} className="review-card">
-                  <strong>{review.username}</strong>
-                  <p>Rating: {review.rating}</p>
-                  <p>{review.comment}</p>
+                  <div className="review-header">
+                    <strong>{review.username}</strong>
+                    <span className="review-rating">★ {review.rating}</span>
+                  </div>
+                  <p className="review-comment">{review.comment}</p>
                 </div>
               ))
             )}
