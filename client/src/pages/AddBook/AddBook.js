@@ -17,6 +17,7 @@ const AddBook = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthContext);
 
+
   useEffect(() => {
     const fetchData = async () => {
       const query = searchParams.get("q");
@@ -83,7 +84,7 @@ const AddBook = () => {
     };
 
     try {
-      await axios.post("${API_URL}/api/v1/books/user", newBook, {
+      await axios.post(`${API_URL}/api/v1/books/user`, newBook, {
         withCredentials: true,
       });
       alert("Book added successfully!");
