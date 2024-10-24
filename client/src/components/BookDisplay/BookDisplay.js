@@ -1,7 +1,12 @@
 import React from "react";
+import SimpleLoader from "../../components/SimpleLoader/SimpleLoader";
 import "./BookDisplay.css";
 
-const BookDisplay = ({ books, handleAddBook, recommended, header }) => {
+const BookDisplay = ({ books, handleAddBook, recommended, header, loading }) => {
+  if (loading) {
+    return <SimpleLoader />;
+  }
+
   return (
     <>
       {header && books.length > 0 && (

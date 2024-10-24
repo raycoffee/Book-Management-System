@@ -1,6 +1,6 @@
 import React from 'react';
-import './ReviewModal.css'; // We'll create this CSS file for styling
-import { FaStar } from 'react-icons/fa'; // Using Font Awesome for star icons
+import './ReviewModal.css'; 
+import { FaStar } from 'react-icons/fa';
 
 const ReviewModal = ({
   open,

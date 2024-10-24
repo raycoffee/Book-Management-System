@@ -25,21 +25,19 @@ export const pearsonCorrelation = (ratings1, ratings2) => {
 
   const ratingsLen = ratings1.length;
 
-  // Check for sufficient data
+ 
   if (ratingsLen < 2) {
-    // Not enough data to compute correlation
+
     return 0;
   }
 
-  // Normal summing of ratings
+ 
   let sum1 = 0;
   let sum2 = 0;
 
-  // Summing of the squares of ratings
   let sum1Sq = 0;
   let sum2Sq = 0;
 
-  // Summing of the products of ratings
   let pSum = 0;
 
   for (let i = 0; i < ratingsLen; i++) {
@@ -52,7 +50,7 @@ export const pearsonCorrelation = (ratings1, ratings2) => {
     pSum += ratings1[i] * ratings2[i];
   }
 
-  // Calculate numerator
+
   const numerator = pSum - (sum1 * sum2) / ratingsLen;
 
   // Calculate denominator

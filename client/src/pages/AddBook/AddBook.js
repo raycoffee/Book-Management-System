@@ -95,8 +95,8 @@ const AddBook = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="container">
-        <h2 className="error">You need to be logged in to add books.</h2>
+      <div className="loader-container">
+        <div className="book-loader"></div>
       </div>
     );
   }

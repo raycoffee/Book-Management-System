@@ -80,7 +80,6 @@ export const updateUserGenres = async (req, res) => {
   try {
     const { favoriteGenres } = req.body;
     
-    // Validate input
     if (!Array.isArray(favoriteGenres)) {
       return res.status(400).json({
         status: 'error',
@@ -88,7 +87,6 @@ export const updateUserGenres = async (req, res) => {
       });
     }
 
-    // Update user with new genres
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { favoriteGenres },
@@ -104,8 +102,6 @@ export const updateUserGenres = async (req, res) => {
         message: 'User not found'
       });
     }
-
-    // Send response with updated user
     res.status(200).json({
       status: 'success',
       data: {
