@@ -101,7 +101,7 @@ export const predictRatings = async (req, res, next) => {
     const similarUsers = await findSimilarUsers(req.user._id);
 
     if (similarUsers.length === 0) {
-      return res.status(200).json([]); // Use return to prevent further execution
+      return res.status(200).json([]);
     }
 
     const currUserRatings = await getUserRatings(req.user._id);
@@ -141,7 +141,7 @@ export const predictRatings = async (req, res, next) => {
     req.predectiveRatings = predectiveRatings;
     next();
   } catch (error) {
-    next(error); // Pass errors to error handler
+    next(error); 
   }
 };
 
@@ -171,7 +171,7 @@ export const recommendBooks = async (req, res, next) => {
 
     return res.status(200).json(recommendedBooks);
   } catch (error) {
-    next(error); // Pass errors to error handler
+    next(error); 
   }
 };
 

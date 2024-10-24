@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import ReviewModal from "../../components/ReviewModal/ReviewModal.js";
 import { AuthContext } from "../../context/AuthContext.js";
 import "./MyBooks.css";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaTrashAlt,FaBook } from "react-icons/fa";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const MyBooks = () => {
@@ -32,6 +32,26 @@ const MyBooks = () => {
       console.error("Failed to fetch books:", error);
     }
   };
+  if (books.length === 0) {
+    return (
+      <div className="my-books-container">
+        <h1 className="my-books-title">My Books</h1>
+        <div className="empty-state">
+          <FaBook className="empty-state-icon" />
+          <h2 className="empty-state-title">No books yet!</h2>
+          <p className="empty-state-text">
+            Start building your collection by adding your favorite books.
+          </p>
+          <button
+            className="empty-state-button"
+            onClick={() => navigate("/add-book")}
+          >
+            Add Your First Book
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleDeleteReview = async (reviewId) => {
     try {

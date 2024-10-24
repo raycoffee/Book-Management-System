@@ -27,7 +27,6 @@ export const getReviewsByBookAuth = async (req, res) => {
           allReviews.length
         : 0;
 
-    // Send the response with all necessary data
     res.status(200).json({
       reviews: communityReviews,
       averageRating,
