@@ -9,8 +9,8 @@
 ### Setup Steps
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/raycoffee/Book-Management-System.git
+cd Book-Management-System
 ```
 
 2. Build the Docker containers
