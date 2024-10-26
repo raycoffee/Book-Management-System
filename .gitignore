@@ -1,4 +1,5 @@
 node_modules/
-server/.env
-*.log
+server/config.env/
 client/.env
+client/.env.production
+*.log
