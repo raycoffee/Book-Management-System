@@ -2,7 +2,15 @@ version: '3'
 
 services:
   server:
-    build: ./server
+    build: 
+      context: ./server
+      args:  # Add build arguments for server
+        - DATABASE=${DATABASE}
+        - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+        - JWT_SECRET=${JWT_SECRET}
+        - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+        - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+        - PORT=${PORT}
     ports:
       - "3001:3001"
     environment:
@@ -11,7 +19,10 @@ services:
       - app-network
 
   client:
-    build: ./client
+    build:
+      context: ./client
+      args:  # Add build argument for client
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
     ports:
       - "80:80" 
     environment:

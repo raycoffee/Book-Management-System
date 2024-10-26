@@ -42,9 +42,21 @@ jobs:
 
     - name: Build and push images
       run: |
-        docker build -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ steps.set-version.outputs.version }}" ./client
+        docker build \
+          --build-arg REACT_APP_API_URL="${{ secrets.REACT_APP_API_URL }}" \
+          -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ steps.set-version.outputs.version }}" \
+          ./client
         docker push "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/client:${{ steps.set-version.outputs.version }}"
-        docker build -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ steps.set-version.outputs.version }}" ./server
+        
+        docker build \
+          --build-arg DATABASE="${{ secrets.DATABASE }}" \
+          --build-arg DATABASE_PASSWORD="${{ secrets.DATABASE_PASSWORD }}" \
+          --build-arg JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+          --build-arg REFRESH_TOKEN_SECRET="${{ secrets.REFRESH_TOKEN_SECRET }}" \
+          --build-arg GOOGLE_API_KEY="${{ secrets.GOOGLE_API_KEY }}" \
+          --build-arg PORT="${{ secrets.PORT }}" \
+          -t "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ steps.set-version.outputs.version }}" \
+          ./server
         docker push "${{ env.REGISTRY }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.DOCKER_REPO }}/server:${{ steps.set-version.outputs.version }}"
 
   deploy:
@@ -93,12 +105,22 @@ jobs:
         
         echo "Starting new containers..."
         
-        # Pull and run new containers
+        # Pull and run new containers with environment variables
         echo "Starting client..."
-        sudo docker run -d --name client -p 80:80 "${CLIENT_IMAGE}"
+        sudo docker run -d --name client \
+          -p 80:80 \
+          "${CLIENT_IMAGE}"
         
         echo "Starting server..."
-        sudo docker run -d --name server -p 3001:3001 "${SERVER_IMAGE}"
+        sudo docker run -d --name server \
+          -p 3001:3001 \
+          -e DATABASE='${{ secrets.DATABASE }}' \
+          -e DATABASE_PASSWORD='${{ secrets.DATABASE_PASSWORD }}' \
+          -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
+          -e REFRESH_TOKEN_SECRET='${{ secrets.REFRESH_TOKEN_SECRET }}' \
+          -e GOOGLE_API_KEY='${{ secrets.GOOGLE_API_KEY }}' \
+          -e PORT='${{ secrets.PORT }}' \
+          "${SERVER_IMAGE}"
         
         echo "Deployment complete!"
         EOF
