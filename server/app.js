@@ -19,10 +19,10 @@ app.use(
       "34.47.130.229:80", 
       "http://34.47.130.229:3001",
       "34.47.130.229:3001",
-      "http://localhost"
+      "http://localhost",
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "OPTIONS", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
